@@ -5,7 +5,7 @@ import { NavigationEvents } from 'react-navigation';
 import { RNCamera } from 'react-native-camera';
 
 
-function MainScreen({navigation, route}) {
+function MainScreen({route, navigation}) {
   return (
     <Container>
       <Header>
@@ -157,4 +157,3 @@ export default MainScreen;
 //     );
 //   }
 // }
-
