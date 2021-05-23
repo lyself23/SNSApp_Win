@@ -8,9 +8,6 @@ import { DataTable } from 'react-native-paper';
 import axios from 'axios';
 import { NavigationEvents } from 'react-navigation';
 
-
-
-
 function SearchStockScreen({navigation, route}) {
   const itemsPerPage = 5;
   const [page, setPage] = React.useState(0);

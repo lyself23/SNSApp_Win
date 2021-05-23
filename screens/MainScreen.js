@@ -10,12 +10,12 @@ function MainScreen({route, navigation}) {
     <Container>
       <Header>
         <Left>
-          <Button transparent onPress={() => this.props.navigation.goBack()}>
+          <Button transparent>
             <Icon name="menu" />
           </Button>
         </Left>
         <Body>
-          <Title>Header</Title>
+          <Title>{route.params.userNo}</Title>
         </Body>
         <Right>
           {/* <Button transparent onPress={() => this.props.navigation.goBack()}>

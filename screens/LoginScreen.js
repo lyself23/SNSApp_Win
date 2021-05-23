@@ -19,7 +19,7 @@ function LogInScreen({navigation}) {
     const [isLoading, setIsLoading] = React.useState(false);
 
     const search = React.useCallback(()=>{
-        if(userNo == "" || userPassword == "") {
+        if(userNo === "" || userPassword === "") {
              alert("사원번호나 비밀번호를 입력해주세요");
         } else {
             let url = 'http://210.101.190.140:8080/api/users/login/';
@@ -29,11 +29,11 @@ function LogInScreen({navigation}) {
             axios.get( url )
             .then( response => {
                 setIsLoading( false );
-                if(response == null) {
+                if(response === null) {
                     alert("사원번호나 비밀번호를 다시 확인해주세요");
                 } else {
                     setList( response.data[0]);
-                    //navigation.navigate("Main", {barcodeNo : ""});
+                    navigation.navigate("Main", {barcodeNo : "", userNo : list.emp_no});
                 }
             } )
             .catch( error => alert( error.message ) );
@@ -64,23 +64,10 @@ function LogInScreen({navigation}) {
           <TouchableHighlight 
               name = "login" 
               style={[styles.buttonContainer, styles.loginButton]}
-              // onPress={search}
-              //Main 으로 이동
-              //onPress = {() => navigation.navigate("Main", {userNo : list.emp_no})}
-              onPress = {() => navigation.navigate("Main", {barcodeNo : ""})} //userNo는 mainscreen에서 route로 받음
+               onPress={search}
           >
               <Text style={styles.loginText}>Login</Text>
           </TouchableHighlight>
-
-          <TouchableHighlight style={styles.buttonContainer}>  
-            {list != null ? ( 
-              //navigation.navigate("메인화면")
-              <Text>{list.emp_nm}</Text>
-            ) : (
-              <Text>{list.emp_nm}</Text>
-            )}
-          
-          </TouchableHighlight> 
 
 
           {/* <TouchableHighlight style={styles.buttonContainer} onPress={() => this.onClickListener('restore_password')}>
