@@ -33,6 +33,7 @@ function LogInScreen({navigation}) {
                     alert("사원번호나 비밀번호를 다시 확인해주세요");
                 } else {
                     setList( response.data[0]);
+                    console.log(list.emp_no);
                     navigation.navigate("Main", {barcodeNo : "", userNo : list.emp_no});
                 }
             } )

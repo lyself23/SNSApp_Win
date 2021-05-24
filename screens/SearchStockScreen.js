@@ -1,6 +1,6 @@
 import * as React from 'react';
 // import { View, Text, Button, ActivityIndicator } from 'react-native';
-import { Form, Item, Label, Input, Left, Body, Title, Right, Container, Header, Content, Footer, FooterTab, Button, Icon, Text, Spinner, Picker } from 'native-base';
+import { Form, Item, Label, Input, Left, Body, Title, Right, Container, Header, Content, Footer, FooterTab, Button, Icon, Text, Spinner, Picker, Drawer } from 'native-base';
 // import { DataTable } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -18,10 +18,11 @@ function SearchStockScreen({navigation, route}) {
   const [lotNo, setLotNo] = React.useState('');
   const [lotList, setLotList] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [isCaptured, setIsCaptured] = React.useState(false);
 
  React.useEffect(() => {
-    let url = 'http://210.101.190.140:8080/api/getWarehouseList/';
-    url += '01/6/1';
+    let url = 'http://203.228.186.44:8080/api/getWarehouseList/';
+    url += '01/6/5';
     axios.get(url)
     .then( response => {   
       setWareHouseList(response.data);
@@ -33,8 +34,10 @@ function SearchStockScreen({navigation, route}) {
   }, []);
 
   const search = React.useCallback(() => {
-    let url = 'http://210.101.190.140:8080/api/searchStock/';
-    url += lotNo + '/01S200';
+    let url = 'http://203.228.186.44:8080/api/searchStock/2021-05/20/01/';
+    url += '01S200/%20/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/'
+    url += lotNo + '/\'\'/\'\'';
+
     console.log(url);
     axios.get(url)
       .then( response => {
@@ -49,6 +52,23 @@ function SearchStockScreen({navigation, route}) {
 
   return (
     <Container>
+      <Header>
+          <Left>
+            <Button transparent>
+              <Icon name='arrow-back' 
+                onPress = {() => navigation.goBack()}/>
+            </Button>
+          </Left>
+          <Body>
+            <Title>Header</Title>
+          </Body>
+          <Right>
+            <Button transparent>
+              <Icon name='menu' 
+                onPress = {() => navigation.openDrawer()}/>
+            </Button>
+          </Right>
+        </Header>
       <Content style = {{flex : 1}}>
         <Form style = {{flex : 1, flexDirection: "row", justifyContent: 'space-between'}}>
           <Item picker style = {{flex : 1}}>
@@ -76,8 +96,8 @@ function SearchStockScreen({navigation, route}) {
                 //value = {lotNo}
                // onChangeText = {value => setLotNo(value)}
                 value = {(route.params.barcodeNo === "") ? lotNo : route.params.barcodeNo}
-               onChangeText = {value => setLotNo(value)}
-                />
+                onChangeText = {value => setLotNo(value)}
+              />
           </Item>
           <Button bordered>
               <Icon name = 'camera' 

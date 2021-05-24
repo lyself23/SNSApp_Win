@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {View, PermissionsAndroid} from 'react-native'; 
 import { Left, Body, Title, Right, Container, Header, Content, Footer, FooterTab, Button, Icon, Text } from 'native-base';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationEvents } from 'react-navigation';
 import { RNCamera } from 'react-native-camera';
 
@@ -11,11 +12,14 @@ function MainScreen({route, navigation}) {
       <Header>
         <Left>
           <Button transparent>
-            <Icon name="menu" />
+            <Icon 
+              name="menu" 
+              onPress = {() => navigation.openDrawer()}/>
           </Button>
         </Left>
         <Body>
-          <Title>{route.params.userNo}</Title>
+          <Title>Header</Title>
+          {/* <Title>{route.params.userNo}</Title> */}
         </Body>
         <Right>
           {/* <Button transparent onPress={() => this.props.navigation.goBack()}>
