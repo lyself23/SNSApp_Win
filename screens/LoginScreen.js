@@ -12,6 +12,7 @@ import {
 import axios from 'axios';
 import Main from '../pages/main';
 import LoginInfo from '../common/LoginInfo';
+import ServerInfo from '../common/ServerInfo';
 
 //로그인 정보 저장
 function setLogInInfo(userInfo) {
@@ -36,7 +37,8 @@ function LogInScreen({navigation}) {
         if(userNo === "" || userPassword === "") {
              alert("사원번호나 비밀번호를 입력해주세요");
         } else {
-            let url = 'http://203.228.186.44:8080/api/users/login/';
+
+            let url = ServerInfo.serverURL + '/api/users/login/';
             url += userNo + '/';
             url += userPassword;
 

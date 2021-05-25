@@ -1,24 +1,20 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import LogInScreen from '../screens/LoginScreen';
 import MainScreen from '../screens/MainScreen';
-import SearchStockScreen from '../screens/SearchStockScreen';
-import BarcodeScanner from '../screens/BarcodeScanner';
 import MoveScreen from '../screens/MoveScreen';
-
+import BarcodeScanner from '../screens/BarcodeScanner';
+ 
 const Stack = createStackNavigator();
 
-function MainNavigator () {
+function MoveNavigator () {
     return (
-        <Stack.Navigator>
-            <Stack.Screen name="LogIn" component={LogInScreen} options={{headerShown : false}} />
+        <Stack.Navigator initialRouteName = "Move">
             <Stack.Screen name="Main" component={MainScreen} options={{headerShown : false}} />
-            <Stack.Screen name="Stock" component={SearchStockScreen} options={{headerShown : false}} />
             <Stack.Screen name="Move" component={MoveScreen} options={{headerShown : false}} />
             <Stack.Screen name="BarcodeScanner" component={BarcodeScanner} />
       </Stack.Navigator>
     )
 }
 
-export default MainNavigator;
+export default MoveNavigator;
 

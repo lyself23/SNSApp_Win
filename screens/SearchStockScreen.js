@@ -1,13 +1,9 @@
-import * as React from 'react';
-// import { View, Text, Button, ActivityIndicator } from 'react-native';
-import { Form, Item, Label, Input, Left, Body, Title, Right, Container, Header, Content, Footer, FooterTab, Button, Icon, Text, Spinner, Picker, Drawer, ActivityIndicator } from 'native-base';
-// import { DataTable } from 'react-native-paper';
-import { NavigationContainer, useIsFocused  } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import React from 'react';
+import { Form, Item, Label, Input, Left, Body, Title, Right, Container, Header, Content, Footer, FooterTab, Button, Icon, Text, Spinner, Picker, Drawer, ActivityIndicator, DatePicker } from 'native-base';
 import { DataTable } from 'react-native-paper';
 import axios from 'axios';
-import { NavigationEvents } from 'react-navigation';
 import LoginInfo from '../common/LoginInfo';
+import ServerInfo from '../common/ServerInfo';
 
 function SearchStockScreen({navigation, route}) {
   const itemsPerPage = 5;
@@ -22,8 +18,8 @@ function SearchStockScreen({navigation, route}) {
   const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {
-    let url = 'http://203.228.186.44:8080/api/getWarehouseList/';
-    url += '01/6/5';
+    let url = ServerInfo.serverURL + '/api/getWarehouseList/';
+    url += LoginInfo.fac_cd + '/\'\'/5';
     
     axios.get(url)
     .then( response => {   
@@ -40,7 +36,7 @@ function SearchStockScreen({navigation, route}) {
   }, [route])
 
   const search = () => {
-    let url = 'http://203.228.186.44:8080/api/searchStock/2021-05/';
+    let url = ServerInfo.serverURL + '/api/searchStock/2021-05/';
     url += LoginInfo.co_cd + '/' + LoginInfo.fac_cd + '/';
     url += whCode + '/%20/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/'
     url += lotNo + '/\'\'/\'\'';
@@ -71,7 +67,7 @@ function SearchStockScreen({navigation, route}) {
             </Button>
           </Left>
           <Body>
-            <Title>Header</Title>
+            <Title>재고 조회</Title>
           </Body>
           <Right>
             <Button transparent>
@@ -80,9 +76,24 @@ function SearchStockScreen({navigation, route}) {
             </Button>
           </Right>
         </Header>
-      <Content style = {{flex : 1}}>
-        <Form style = {{flex : 1, flexDirection: "row", justifyContent: 'space-between'}}>
-          <Item picker style = {{flex : 1}}>
+      <Content style = {{flex : 1}}>     
+        <Form style = {{flex : 1, flexDirection: "row", justifyContent: 'space-between', marginLeft : 20, marginRight : 20}}>
+          {/* <Item style = {{flex : 1}} >
+            <DatePicker
+              defaultDate={new Date(2018, 4, 4)}          
+              locale={"en"}
+              timeZoneOffsetInMinutes={undefined}
+              modalTransparent={false}
+              animationType={"fade"}
+              androidMode={"default"}
+              placeHolderText="날짜"
+              textStyle={{ color: "green" }}
+              placeHolderTextStyle={{ color: "#d3d3d3" }}
+            // onDateChange={this.setDate}
+              disabled={false}
+              />
+          </Item> */}
+          <Item picker style = {{flex : 1}}>          
               <Picker
                 mode="dropdown"
                 style={{ width: undefined }}
@@ -101,23 +112,25 @@ function SearchStockScreen({navigation, route}) {
                   <></> 
                 ))}
               </Picker>
+          </Item>            
+         
+        </Form>
+        <Form style = {{flex : 1, flexDirection: "row", justifyContent: 'space-between'}}>
+          <Item stackedLabel style = {{flex : 1, marginLeft : 20, marginRight : 20}}>
+            <Label>LOTNO</Label>
+            <Input 
+              value = {lotNo}
+              onChangeText = {value => setLotNo(value)} 
+            />
           </Item>  
-          
-          <Item stackedLabel style = {{flex : 1}}>
-              <Label>LOTNO</Label>
-              <Input 
-               value = {lotNo}
-               onChangeText = {value => setLotNo(value)} 
-              />
-          </Item>
           <Button bordered>
               <Icon name = 'camera' 
-                onPress = {() => navigation.navigate("BarcodeScanner")}/>
+                onPress = {() => navigation.navigate("BarcodeScanner", {flag : 'S'})}/>
           </Button> 
-                   
         </Form>
         <Form>
-          <Button full style = {{marginTop:20}}
+          
+          <Button block style = {{marginTop:20, marginLeft : 10, marginRight : 10}}
             onPress = {search}
           >
             <Text>조회</Text>

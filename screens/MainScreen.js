@@ -1,9 +1,5 @@
 import React, { Component } from 'react';
-import {View, PermissionsAndroid} from 'react-native'; 
 import { Left, Body, Title, Right, Container, Header, Content, Footer, FooterTab, Button, Icon, Text } from 'native-base';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { NavigationEvents } from 'react-navigation';
-import { RNCamera } from 'react-native-camera';
 import LoginInfo from '../common/LoginInfo';
 
 
@@ -20,7 +16,6 @@ function MainScreen({navigation}) {
         </Left>
         <Body>
           <Title>HEADER</Title>
-          {/* <Title>{route.params.userNo}</Title> */}
         </Body>
         <Right>
           {/* <Button transparent onPress={() => this.props.navigation.goBack()}>
@@ -34,7 +29,13 @@ function MainScreen({navigation}) {
           onPress = { () => navigation.navigate("Stock", {barcodeNo : ""})}
         >
           <Text>재고조회</Text>
-        </Button>      
+        </Button>    
+
+        <Button info
+          onPress = { () => navigation.navigate("Move", {barcodeNo : ""})}
+        >
+          <Text>창고이동</Text>
+        </Button>    
         <Text>{LoginInfo.fac_cd + "," + LoginInfo.co_cd}</Text>
       </Content>
       <Footer>

@@ -68,7 +68,11 @@ function BarcodeScanner({navigation, route}) {
     //Operation after scanning the code
     console.log("scan : " + data);
     //alert(data);
-    navigation.navigate("Stock", {barcodeNo : data})
+    if(route.params.flag === 'S') {
+      navigation.navigate("Stock", {barcodeNo : data})
+    } else if (route.params.flag === 'M') {
+      navigation.navigate("Move", {barcodeNo : data})
+    }
   };
  
   return (
