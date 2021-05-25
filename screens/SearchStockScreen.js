@@ -7,6 +7,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { DataTable } from 'react-native-paper';
 import axios from 'axios';
 import { NavigationEvents } from 'react-navigation';
+import LoginInfo from '../common/LoginInfo';
 
 function SearchStockScreen({navigation, route}) {
   const itemsPerPage = 5;
@@ -31,7 +32,7 @@ function SearchStockScreen({navigation, route}) {
     .catch ( error => {
       alert("창고에러 : " + error.message);
     });
-  }, []);
+   }, []);
 
   //route가 변경될 때마다 실행
   React.useEffect(() => {
@@ -39,7 +40,8 @@ function SearchStockScreen({navigation, route}) {
   }, [route])
 
   const search = () => {
-    let url = 'http://203.228.186.44:8080/api/searchStock/2021-05/20/01/';
+    let url = 'http://203.228.186.44:8080/api/searchStock/2021-05/';
+    url += LoginInfo.co_cd + '/' + LoginInfo.fac_cd + '/';
     url += whCode + '/%20/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/'
     url += lotNo + '/\'\'/\'\'';
     // setIsLoading( true );
@@ -93,7 +95,7 @@ function SearchStockScreen({navigation, route}) {
               >
                 {(wareHouseList.length > 0 ? (
                   wareHouseList.map(item => (
-                    <Picker.Item label={item.wh_nm} value={item.wh_cd} />
+                    <Picker.Item key = {item.wh_cd} label={item.wh_nm} value={item.wh_cd} />
                   ))
                 ) : (
                   <></> 
@@ -133,7 +135,7 @@ function SearchStockScreen({navigation, route}) {
             <ActivityIndicator size = {'large'} /> 
           ) : (
             lotList.map(item => (
-              <DataTable.Row>
+              <DataTable.Row key = {item.mng_no, item.box_sq}>
                 <DataTable.Cell>{item.mng_no}</DataTable.Cell>
                 <DataTable.Cell numeric>{item.box_sq}</DataTable.Cell>
                 <DataTable.Cell numeric>{item.end_qty}</DataTable.Cell>

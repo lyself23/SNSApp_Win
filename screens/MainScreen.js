@@ -4,8 +4,10 @@ import { Left, Body, Title, Right, Container, Header, Content, Footer, FooterTab
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationEvents } from 'react-navigation';
 import { RNCamera } from 'react-native-camera';
+import LoginInfo from '../common/LoginInfo';
 
-function MainScreen({route, navigation}) {
+
+function MainScreen({navigation}) {
   return (
     <Container>
       <Header>
@@ -17,7 +19,7 @@ function MainScreen({route, navigation}) {
           </Button>
         </Left>
         <Body>
-          <Title>Header</Title>
+          <Title>HEADER</Title>
           {/* <Title>{route.params.userNo}</Title> */}
         </Body>
         <Right>
@@ -33,6 +35,7 @@ function MainScreen({route, navigation}) {
         >
           <Text>재고조회</Text>
         </Button>      
+        <Text>{LoginInfo.fac_cd + "," + LoginInfo.co_cd}</Text>
       </Content>
       <Footer>
         <FooterTab>

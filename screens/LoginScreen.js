@@ -11,6 +11,20 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import Main from '../pages/main';
+import LoginInfo from '../common/LoginInfo';
+
+//로그인 정보 저장
+function setLogInInfo(userInfo) {
+  LoginInfo.reg_id = userInfo.reg_id,
+  LoginInfo.emp_no = userInfo.emp_no,
+  LoginInfo.emp_nm = userInfo.emp_nm,
+  LoginInfo.co_cd = userInfo.co_cd,
+  LoginInfo.bs_cd = userInfo.bs_cd,
+  LoginInfo.div_cd = userInfo.div_cd,
+  LoginInfo.dept_cd = userInfo.dept_cd,
+  LoginInfo.dept_nm = userInfo.dept_nm,
+  LoginInfo.fac_cd = userInfo.fac_cd
+}
 
 function LogInScreen({navigation}) {
     const [userNo, setUserNo] = React.useState('');
@@ -31,14 +45,12 @@ function LogInScreen({navigation}) {
 
             axios.get( url )
             .then( response => {
-                console.log(response.data.length);
                 setIsLoading( false );
                 if(response.data.length === 0) {
                     alert("사원번호나 비밀번호를 다시 확인해주세요");
                 } else {
-                    setList( response.data[0]);
-                    console.log(list.emp_no);
-                    navigation.navigate("Main", {userNo : list.emp_no});
+                    setLogInInfo(response.data[0]);
+                    navigation.navigate("Main");
                 }
             } )
             .catch( error => alert( error.message ) );
