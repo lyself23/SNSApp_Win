@@ -2,7 +2,7 @@ import * as React from 'react';
 // import { View, Text, Button, ActivityIndicator } from 'react-native';
 import { Form, Item, Label, Input, Left, Body, Title, Right, Container, Header, Content, Footer, FooterTab, Button, Icon, Text, Spinner, Picker, Drawer } from 'native-base';
 // import { DataTable } from 'react-native-paper';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useIsFocused  } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { DataTable } from 'react-native-paper';
 import axios from 'axios';
@@ -20,20 +20,25 @@ function SearchStockScreen({navigation, route}) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [isCaptured, setIsCaptured] = React.useState(false);
 
- React.useEffect(() => {
+  React.useEffect(() => {
     let url = 'http://203.228.186.44:8080/api/getWarehouseList/';
     url += '01/6/5';
+    
     axios.get(url)
     .then( response => {   
       setWareHouseList(response.data);
-      //  alert(wareHouseList.length)
     })
     .catch ( error => {
       alert("창고에러 : " + error.message);
     });
   }, []);
 
-  const search = React.useCallback(() => {
+  //route가 변경될 때마다 실행
+  React.useEffect(() => {
+    setLotNo(route.params.barcodeNo);    
+  }, [route])
+
+  const search = () => {
     let url = 'http://203.228.186.44:8080/api/searchStock/2021-05/20/01/';
     url += '01S200/%20/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/'
     url += lotNo + '/\'\'/\'\'';
@@ -48,7 +53,7 @@ function SearchStockScreen({navigation, route}) {
       .catch ( error => {
         alert(error.message);
       });
-  }, [lotNo]);
+  };
 
   return (
     <Container>
@@ -93,10 +98,8 @@ function SearchStockScreen({navigation, route}) {
           <Item stackedLabel style = {{flex : 1}}>
               <Label>LOTNO</Label>
               <Input 
-                //value = {lotNo}
-               // onChangeText = {value => setLotNo(value)}
-                value = {(route.params.barcodeNo === "") ? lotNo : route.params.barcodeNo}
-                onChangeText = {value => setLotNo(value)}
+               value = {lotNo}
+               onChangeText = {value => setLotNo(value)} 
               />
           </Item>
           <Button bordered>
