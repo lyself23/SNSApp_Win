@@ -18,28 +18,32 @@ function LogInScreen({navigation}) {
     const [list, setList] = React.useState([null]);
     const [isLoading, setIsLoading] = React.useState(false);
 
-    const search = React.useCallback(()=>{
+    const search = ()=>{
         if(userNo === "" || userPassword === "") {
              alert("사원번호나 비밀번호를 입력해주세요");
         } else {
-            let url = 'http://210.101.190.140:8080/api/users/login/';
+            let url = 'http://203.228.186.44:8080/api/users/login/';
             url += userNo + '/';
             url += userPassword;
+
             setIsLoading( true );
+            console.log(url);
+
             axios.get( url )
             .then( response => {
+                console.log(response.data.length);
                 setIsLoading( false );
-                if(response === null) {
+                if(response.data.length === 0) {
                     alert("사원번호나 비밀번호를 다시 확인해주세요");
                 } else {
                     setList( response.data[0]);
                     console.log(list.emp_no);
-                    navigation.navigate("Main", {barcodeNo : "", userNo : list.emp_no});
+                    navigation.navigate("Main", {userNo : list.emp_no});
                 }
             } )
             .catch( error => alert( error.message ) );
         }
-    }, [userNo, userPassword]);
+    };
     return (      
         <View style={styles.container}>            
           <View style={styles.inputContainer}>

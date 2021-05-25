@@ -1,6 +1,6 @@
 import * as React from 'react';
 // import { View, Text, Button, ActivityIndicator } from 'react-native';
-import { Form, Item, Label, Input, Left, Body, Title, Right, Container, Header, Content, Footer, FooterTab, Button, Icon, Text, Spinner, Picker, Drawer } from 'native-base';
+import { Form, Item, Label, Input, Left, Body, Title, Right, Container, Header, Content, Footer, FooterTab, Button, Icon, Text, Spinner, Picker, Drawer, ActivityIndicator } from 'native-base';
 // import { DataTable } from 'react-native-paper';
 import { NavigationContainer, useIsFocused  } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -15,10 +15,10 @@ function SearchStockScreen({navigation, route}) {
   const to = (page + 1) * itemsPerPage;
 
   const [wareHouseList, setWareHouseList] = React.useState([]); 
+  const [whCode, setWhCode] = React.useState('');
   const [lotNo, setLotNo] = React.useState('');
   const [lotList, setLotList] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [isCaptured, setIsCaptured] = React.useState(false);
 
   React.useEffect(() => {
     let url = 'http://203.228.186.44:8080/api/getWarehouseList/';
@@ -40,15 +40,19 @@ function SearchStockScreen({navigation, route}) {
 
   const search = () => {
     let url = 'http://203.228.186.44:8080/api/searchStock/2021-05/20/01/';
-    url += '01S200/%20/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/'
+    url += whCode + '/%20/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/'
     url += lotNo + '/\'\'/\'\'';
-
+    // setIsLoading( true );
     console.log(url);
     axios.get(url)
       .then( response => {
         setIsLoading( false );
+
+        if(response.data.length === 0) {
+          alert("조회된 내용이 없습니다");
+        }  
+        // alert(lotList[1].box_sq)      
         setLotList(response.data);
-          // alert(lotList[1].box_sq)
       })
       .catch ( error => {
         alert(error.message);
@@ -84,6 +88,8 @@ function SearchStockScreen({navigation, route}) {
                 placeholderStyle={{ color: "#bfc6ea" }}
                 placeholderIconColor="#007aff"
                 selectedValue={undefined}
+                value = {whCode}
+                onValueChange = {value => setWhCode(value)}
               >
                 {(wareHouseList.length > 0 ? (
                   wareHouseList.map(item => (

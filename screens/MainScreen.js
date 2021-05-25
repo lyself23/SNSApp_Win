@@ -5,7 +5,6 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationEvents } from 'react-navigation';
 import { RNCamera } from 'react-native-camera';
 
-
 function MainScreen({route, navigation}) {
   return (
     <Container>
