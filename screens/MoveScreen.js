@@ -1,16 +1,14 @@
 import React from 'react';
-import { Form, Item, Label, Input, Left, Body, Title, Right, Container, Header, Content, Footer, FooterTab, Button, Icon, Text, Spinner, Picker, Drawer, ActivityIndicator, DatePicker } from 'native-base';
-import { DataTable } from 'react-native-paper';
+import { Item, Label, Input, Left, Body, Title, Right, Container, Header, Content, Button, Icon, Picker} from 'native-base';
+ import { DataTable, IconButton} from 'react-native-paper';
 import axios from 'axios';
 import LoginInfo from '../common/LoginInfo';
 import ServerInfo from '../common/ServerInfo';
+import { SafeAreaView, View, FlatList, StyleSheet, Text, StatusBar } from 'react-native';
+import MoveListBox from './MoveListBox';
+import MoveListHeader from './MoveListHeader';
 
 function MoveScreen ({navigation, route}) {
-  const itemsPerPage = 5;
-  const [page, setPage] = React.useState(0);
-  const from = page * itemsPerPage;
-  const to = (page + 1) * itemsPerPage;
-
   const [wareHouseInList, setWareHouseInList] = React.useState([]); 
   const [whInCode, setWhInCode] = React.useState('');
 
@@ -19,11 +17,21 @@ function MoveScreen ({navigation, route}) {
 
   const [lotNo, setLotNo] = React.useState('');
   const [lotList, setLotList] = React.useState([]);
+  const [scanData, setScanData] = React.useState([]);
+
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const deleteItem = index => {
+      const arr = [...lotList];
+      arr.splice(index, 1);
+      setLotList(arr);
+  }
+
+
 
   React.useEffect(() => {    
     let url = ServerInfo.serverURL + '/api/getWarehouseList/';
-    url += LoginInfo.fac_cd + '/\'\'/5';
+    url += LoginInfo.fac_cd + '/\'\'/4';
     axios.get(url)
     .then( response => {   
         setWareHouseInList(response.data);
@@ -33,7 +41,7 @@ function MoveScreen ({navigation, route}) {
     });
 
     url = ServerInfo.serverURL + '/api/getWarehouseList/';
-    url += LoginInfo.fac_cd + '/\'\'/5';
+    url += LoginInfo.fac_cd + '/\'\'/3';
     axios.get(url)
     .then( response => {   
         setWareHouseOutList(response.data);
@@ -45,22 +53,33 @@ function MoveScreen ({navigation, route}) {
 
   //route가 변경될 때마다 실행
   React.useEffect(() => {
-    setLotNo(route.params.barcodeNo);    
-    scanData();
+    setLotNo(route.params.barcodeNo);  
   }, [route])
 
-  const scanData = () => {
-    let url = ServerInfo.serverURL + '/api/scanMoveList/';
-    url += LoginInfo.fac_cd + '/';
-    url += lotNo + '/' + whOutCode + '/2/\'\'';
-    
-    axios.get(url)
-    .then( response => {   
-        setLotList(response.data);
-    })
-    .catch ( error => {
-      alert("창고에러 : " + error.message);
-    });
+React.useEffect(() => {
+    setLotList(lotList.concat(scanData));
+}, [scanData])
+
+  const getLotData = (e) => {
+      if(e.nativeEvent.key === "Enter") {
+        let url = ServerInfo.serverURL + '/api/scanMoveList/';
+        url += LoginInfo.fac_cd + '/';
+        url += lotNo + '/' + whOutCode + '/2/\'\'';
+        
+        console.log(url);
+        axios.get(url)
+        .then( response => {
+            if(response.data.name === 'ERROR') {
+                alert(response.data.message);
+            } else {                 
+                setScanData(response.data);        
+            }
+            setLotNo('');
+        })
+        .catch ( error => {
+          alert("창고에러 : " + error.message);
+        });
+      }
   }
 
   const save = () => {
@@ -85,6 +104,7 @@ function MoveScreen ({navigation, route}) {
       });
   };
 
+
     return (
         <Container>
             <Header>
@@ -105,8 +125,8 @@ function MoveScreen ({navigation, route}) {
                 </Right>
             </Header>
             <Content>
-                <Form style = {{flex : 1, flexDirection: "row"}}>
-                    <Form style = {{flex : 1, flexDirection: "column"}}>
+                <View style = {{flex : 1, flexDirection: "row"}}>
+                    <View style = {{flex : 1, flexDirection: "column"}}>
                         <Text>출고창고</Text>
                         <Picker
                             mode="dropdown"
@@ -126,8 +146,8 @@ function MoveScreen ({navigation, route}) {
                             <></> 
                             ))}                
                         </Picker>
-                    </Form>
-                    <Form style = {{flex : 1, flexDirection: "column"}}>
+                    </View>
+                    <View style = {{flex : 1, flexDirection: "column"}}>
                         <Text>입고창고</Text>
                         <Picker
                             mode="dropdown"
@@ -147,58 +167,47 @@ function MoveScreen ({navigation, route}) {
                             <></> 
                             ))}                       
                         </Picker>
-                    </Form>                    
-                </Form>
-                <Form style = {{flex : 1, flexDirection: "row"}}>
+                    </View>                    
+                </View>
+                <View style = {{flex : 1, flexDirection: "row"}}>
                     <Item stackedLabel style = {{flex : 1, marginLeft : 20, marginRight : 20}}>
                         <Label>LOTNO</Label>
-                        <Input 
+                        <Input
                             value = {lotNo}
+                            autoFocus = {true}
+                            autoCapitalize = 'characters'
+                            keyboardType = 'email-address'
                             onChangeText = {value => setLotNo(value)} 
+                            returnKeyType = 'none'
+                            onKeyPress = {getLotData}                            
                         />
                     </Item>  
                         <Button bordered>
                             <Icon name = 'camera' 
-                                onPress = {() => navigation.navigate("BarcodeScanner", {flag : 'M'})}/>
+                                onPress = {() => navigation.navigate("BarcodeScanner", {screenName : 'Move', ismultiScan : false})}/>
                         </Button> 
-                </Form>
-
-                <DataTable style = {{marginTop:20}}>
-                    <DataTable.Header>
-                        <DataTable.Title>LOTNO</DataTable.Title>
-                        <DataTable.Title numeric>박스순번</DataTable.Title>
-                        <DataTable.Title numeric>재고</DataTable.Title>
-                        <DataTable.Title numeric>이동수량</DataTable.Title>
-                    </DataTable.Header>
-
-                    {isLoading ? (
-                        <ActivityIndicator size = {'large'} /> 
-                    ) : (
-                        lotList.map(item => (
-                        <DataTable.Row key = {item.mng_no, item.box_sq}>
-                            <DataTable.Cell>{item.mng_no}</DataTable.Cell>
-                            <DataTable.Cell numeric>{item.box_sq}</DataTable.Cell>
-                            <DataTable.Cell numeric>{item.end_qty}</DataTable.Cell>
-                            <DataTable.Cell numeric>{item.end_qty}</DataTable.Cell>
-                        </DataTable.Row>
-                        ))                   
-                    )
-                    }
-
-                    {/* <DataTable.Pagination
-                        page={page}
-                        numberOfPages={Math.floor(lotList.length / itemsPerPage)}
-                        onPageChange={page => setPage(page)}
-                        label={`${from + 1}-${to} of ${lotList.length}`}
-                    />   */}
-                </DataTable>
-
-                <Button block style = {{marginTop:20, marginLeft : 10, marginRight : 10}}
-                    onPress = {save}
-                >
-                    <Text>등록</Text>
-                </Button>
+                </View>              
             </Content>
+
+            <FlatList
+                   data = {lotList}
+                   renderItem = {(item, index) => {
+                       return <MoveListBox data = {item} handleDelete = {() => deleteItem(index)} />;
+                   }}
+                //    ListHeaderComponent = {() => {
+                //        return <MoveListHeader />
+                //    }}
+                 //  removeClippedSubviews = {false}
+                 //  stickyHeaderIndices = {[0]}
+                   keyExtractor = {(item, index) => index.toString()}
+                //   ItemSeparatorComponent = {() => {<View style = {{height:1, backgroundColor: 'black'}}></View>}}
+                />
+
+            <Button block style = {{marginTop:20, marginLeft : 10, marginRight : 10}}
+                    onPress = {save}
+            >
+                <Text>등록</Text>
+            </Button>
         </Container>
     )
 };

@@ -13,8 +13,8 @@ function MainNavigator () {
         <Stack.Navigator>
             <Stack.Screen name="LogIn" component={LogInScreen} options={{headerShown : false}} />
             <Stack.Screen name="Main" component={MainScreen} options={{headerShown : false}} />
-            <Stack.Screen name="Stock" component={SearchStockScreen} options={{headerShown : false}} />
-            <Stack.Screen name="Move" component={MoveScreen} options={{headerShown : false}} />
+            <Stack.Screen name="Stock" component={SearchStockScreen} options={{headerShown : false}} initialParams = {{barcodeNo : ""}}/>
+            <Stack.Screen name="Move" component={MoveScreen} options={{headerShown : false}} initialParams = {{barcodeNo : ""}}/>
             <Stack.Screen name="BarcodeScanner" component={BarcodeScanner} />
       </Stack.Navigator>
     )

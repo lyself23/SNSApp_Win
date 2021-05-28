@@ -67,11 +67,16 @@ function BarcodeScanner({navigation, route}) {
     const {data} = result; //Just get data
     //Operation after scanning the code
     console.log("scan : " + data);
-    //alert(data);
-    if(route.params.flag === 'S') {
-      navigation.navigate("Stock", {barcodeNo : data})
-    } else if (route.params.flag === 'M') {
-      navigation.navigate("Move", {barcodeNo : data})
+
+    //하나의 코드만 스캔할 경우는 이전 화면으로 이동
+    if(route.params.ismultiScan === false) {
+      navigation.navigate({
+        name: route.params.screenName,
+        params: { barcodeNo: data },
+        merge: true,
+      });
+    } else {
+      alert('카메라');      
     }
   };
  

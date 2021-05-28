@@ -11,7 +11,7 @@ function SearchStockNavigator () {
     return (
         <Stack.Navigator initialRouteName = "Stock">
             <Stack.Screen name="Main" component={MainScreen} options={{headerShown : false}} />
-            <Stack.Screen name="Stock" component={SearchStockScreen} options={{headerShown : false}} />
+            <Stack.Screen name="Stock" component={SearchStockScreen} options={{headerShown : false}} initialParams = {{barcodeNo : ""}}/>
             <Stack.Screen name="BarcodeScanner" component={BarcodeScanner} />
       </Stack.Navigator>
     )

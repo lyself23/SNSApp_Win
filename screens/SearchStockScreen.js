@@ -125,7 +125,7 @@ function SearchStockScreen({navigation, route}) {
           </Item>  
           <Button bordered>
               <Icon name = 'camera' 
-                onPress = {() => navigation.navigate("BarcodeScanner", {flag : 'S'})}/>
+                onPress = {() => navigation.navigate("BarcodeScanner", {screenName : 'Stock', ismultiScan : false})}/>
           </Button> 
         </Form>
         <Form>

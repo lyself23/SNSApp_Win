@@ -10,8 +10,8 @@ function MoveNavigator () {
     return (
         <Stack.Navigator initialRouteName = "Move">
             <Stack.Screen name="Main" component={MainScreen} options={{headerShown : false}} />
-            <Stack.Screen name="Move" component={MoveScreen} options={{headerShown : false}} />
-            <Stack.Screen name="BarcodeScanner" component={BarcodeScanner} />
+            <Stack.Screen name="Move" component={MoveScreen} options={{headerShown : false}} initialParams = {{barcodeNo : ""}}/>
+            <Stack.Screen name="BarcodeScanner" component={BarcodeScanner}/>
       </Stack.Navigator>
     )
 }
