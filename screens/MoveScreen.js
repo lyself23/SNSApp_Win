@@ -125,7 +125,7 @@ React.useEffect(() => {
                 </Right>
             </Header>
             <Content>
-                <View style = {{flex : 1, flexDirection: "row"}}>
+                  <View style = {{flex : 1, flexDirection: "row"}}>
                     <View style = {{flex : 1, flexDirection: "column"}}>
                         <Text>출고창고</Text>
                         <Picker
@@ -194,9 +194,7 @@ React.useEffect(() => {
                    renderItem = {(item, index) => {
                        return <MoveListBox data = {item} handleDelete = {() => deleteItem(index)} />;
                    }}
-                //    ListHeaderComponent = {() => {
-                //        return <MoveListHeader />
-                //    }}
+                   ListHeaderComponent = {MoveListHeader}
                  //  removeClippedSubviews = {false}
                  //  stickyHeaderIndices = {[0]}
                    keyExtractor = {(item, index) => index.toString()}

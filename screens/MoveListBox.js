@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet, Dimensions, Animated, TouchableOpacity} from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { Icon, Input, Label, TextInput} from 'native-base';
+import { Icon, Container, Header, Title, Footer, Content, List, ListItem, Left, Body, Right, Thumbnail, Button, Form, Item, Input, Label } from 'native-base';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const MoveListBox = (props) => {
@@ -14,11 +14,13 @@ const MoveListBox = (props) => {
         });
         return (
             <TouchableOpacity onPress = {props.handleDelete} activeOpacity = {0.6}>
-                <View style = {styles.deleteBox}>
-                    <Animated.Text style ={{transform : [{scale : scale}]}}>
-                        <Icon name = 'trash' />
-                    </Animated.Text>
-                </View>
+           
+                    <View style = {styles.deleteBox}>
+                        <Animated.Text style ={{transform : [{scale : scale}]}}>
+                            <Icon name = 'trash' />
+                        </Animated.Text>
+                    </View>
+                             
             </TouchableOpacity>
         )
     }
@@ -26,12 +28,20 @@ const MoveListBox = (props) => {
         <Swipeable
             renderLeftActions = {leftSwipe}
         >
-            <View style = {styles.container}>
-                <Text>품목코드 : {props.data.item.itm_cd}</Text>
-                <Text>품목명 : {props.data.item.itm_nm}</Text>
-                <Text>규격 : {props.data.item.spec}</Text>
-
-            </View>
+            <ListItem thumbnail>                  
+                <Body style = {{flex : 1, flexDirection : 'row'}}>
+                    <View style = {{paddingRight : 15}}>
+                        <Text>{props.data.item.itm_cd}</Text>
+                        <Text>{props.data.item.itm_nm}</Text>
+                    </View>
+                    <View style = {{paddingRight : 15}}>
+                        <Text>{props.data.item.spec}</Text>  
+                    </View>
+                </Body>
+                <Right>
+                    <Input>ss</Input>
+                </Right>         
+            </ListItem>
         </Swipeable>
     );
 };
@@ -42,7 +52,13 @@ const styles = StyleSheet.create({
     container : {
         height : 80,
         width : SCREEN_WIDTH,
-        backgroundColor : 'white'
+        backgroundColor : 'white',
+        borderWidth : 1,
+        borderRadius : 8, 
+        padding : 8, 
+        margin : 8
+        // flex : 1,
+        // flexDirection : 'row'
     },
     deleteBox : {
         backgroundColor : 'red',
