@@ -2,8 +2,8 @@ import React from 'react';
 import { Item, Label, Input, Left, Body, Title, Right, Container, Header, Content, Button, Icon, Picker} from 'native-base';
  import { DataTable, IconButton} from 'react-native-paper';
 import axios from 'axios';
-import LoginInfo from '../common/LoginInfo';
-import ServerInfo from '../common/ServerInfo';
+import LoginInfo from '../../common/LoginInfo';
+import ServerInfo from '../../common/ServerInfo';
 import { SafeAreaView, View, FlatList, StyleSheet, Text, StatusBar } from 'react-native';
 import MoveListBox from './MoveListBox';
 import MoveListHeader from './MoveListHeader';
@@ -83,24 +83,22 @@ React.useEffect(() => {
   }
 
   const save = () => {
-    let url = ServerInfo.serverURL + '/api/searchStock/2021-05/';
-    url += LoginInfo.co_cd + '/' + LoginInfo.fac_cd + '/';
-    url += whCode + '/%20/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/\'\'/'
-    url += lotNo + '/\'\'/\'\'';
-    // setIsLoading( true );
-    console.log(url);
-    axios.get(url)
-      .then( response => {
-        setIsLoading( false );
+    let url = ServerInfo.serverURL + '/api/MoveLotNo';    
+    let object = [{test1 : 3, test2 : 'asdfdd'}, {test1 : 2, test2 : 'aszzdfdd'}];
 
-        if(response.data.length === 0) {
-          alert("조회된 내용이 없습니다");
-        }  
-        // alert(lotList[1].box_sq)      
-        setLotList(response.data);
+    let formdata = new FormData();
+    formdata.append('data', JSON.stringify(object));
+
+    // setIsLoading( true );
+
+    params.append()
+    console.log(url);
+    axios.post(url, formdata)
+      .then( response => {
+        console.log(response);
       })
       .catch ( error => {
-        alert(error.message);
+        console.log(error.message);
       });
   };
 

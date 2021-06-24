@@ -10,11 +10,19 @@ const MoveListHeader = (props) => {
                 <View>
                     <Text>품목코드 </Text>
                     <Text>품목명 </Text>
-                </View>
+                                     
+                </View>    
+            </Body>
+            <Body>
                 <View>
-                    <Text>규격 </Text>
-                </View>
-          
+                    <Text>규격 </Text>   
+                    <Text>LOTNO </Text>
+                </View>     
+            </Body>
+            <Body>
+                <View>
+                    <Text>수량 </Text>
+                </View>     
             </Body>   
         </ListItem>
        
