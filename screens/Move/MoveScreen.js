@@ -122,8 +122,86 @@ React.useEffect(() => {
                     </Button>
                 </Right>
             </Header>
-            <Content>
-                  <View style = {{flex : 1, flexDirection: "row"}}>
+           
+            <View style = {{flex : 0.25, flexDirection : 'row', paddingTop : 20}}>
+                <View style = {{flex : 1, flexDirection: "column"}}>
+                    <Text>출고창고</Text>
+                    <Picker
+                        mode="dropdown"
+                        style={{ width: undefined }}
+                        placeholder="출고창고"
+                        placeholderStyle={{ color: "#bfc6ea" }}
+                        placeholderIconColor="#007aff"
+                        selectedValue={undefined}
+                        value = {whOutCode}
+                        onValueChange = {value => setWhOutCode(value)}
+                    >       
+                    {(wareHouseOutList.length > 0 ? (
+                        wareHouseOutList.map(item => (
+                            <Picker.Item key = {item.wh_cd} label={item.wh_nm} value={item.wh_cd} />
+                        ))
+                        ) : (
+                        <></> 
+                        ))}                
+                    </Picker>
+                </View>
+                <View style = {{flex : 1, flexDirection: "column"}}>
+                    <Text>입고창고</Text>
+                    <Picker
+                        mode="dropdown"
+                        style={{ width: undefined }}
+                        placeholder="입고창고"
+                        placeholderStyle={{ color: "#bfc6ea" }}
+                        placeholderIconColor="#007aff"
+                        selectedValue={undefined}
+                        value = {whInCode}
+                        onValueChange = {value => setWhInCode(value)}
+                    >       
+                    {(wareHouseInList.length > 0 ? (
+                        wareHouseInList.map(item => (
+                            <Picker.Item key = {item.wh_cd} label={item.wh_nm} value={item.wh_cd} />
+                        ))
+                        ) : (
+                        <></> 
+                        ))}                       
+                    </Picker>
+                </View> 
+            </View>   
+
+            <View style = {{flex : 0.5, flexDirection : 'row', paddingTop : 40, paddingBottom : 40}}>
+                <Item regular style = {{flex : 1, marginLeft : 20, marginRight : 20}}>
+                    <Label>LOTNO</Label>
+                    <Input
+                        value = {lotNo}
+                        autoFocus = {true}
+                        autoCapitalize = 'characters'
+                        keyboardType = 'email-address'
+                        onChangeText = {value => setLotNo(value)} 
+                        returnKeyType = 'none'
+                        onKeyPress = {getLotData}                            
+                    />
+                </Item>  
+                <Button bordered>
+                    <Icon name = 'camera' 
+                        onPress = {() => navigation.navigate("BarcodeScanner", {screenName : 'Move', ismultiScan : false})}/>
+                </Button>
+            </View>        
+            
+            <FlatList style = {{flex : 1}}
+                   data = {lotList}
+                   renderItem = {(item, index) => {
+                       return <MoveListBox data = {item} handleDelete = {() => deleteItem(index)} />;
+                   }}
+                   ListHeaderComponent = {MoveListHeader}
+                 //  removeClippedSubviews = {false}
+                 //  stickyHeaderIndices = {[0]}
+                   keyExtractor = {(item, index) => index.toString()}
+                //   ItemSeparatorComponent = {() => {<View style = {{height:1, backgroundColor: 'black'}}></View>}}
+                />
+
+
+            {/* <Content style = {{flex : 1}}>
+                <View style = {{flex : 1, flexDirection: "row"}}>
                     <View style = {{flex : 1, flexDirection: "column"}}>
                         <Text>출고창고</Text>
                         <Picker
@@ -187,7 +265,7 @@ React.useEffect(() => {
                 </View>              
             </Content>
 
-            <FlatList
+            <FlatList style = {{flex : 0.5}}
                    data = {lotList}
                    renderItem = {(item, index) => {
                        return <MoveListBox data = {item} handleDelete = {() => deleteItem(index)} />;
@@ -203,7 +281,7 @@ React.useEffect(() => {
                     onPress = {save}
             >
                 <Text>등록</Text>
-            </Button>
+            </Button> */}
         </Container>
     )
 };

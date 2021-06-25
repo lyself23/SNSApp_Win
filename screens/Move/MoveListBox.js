@@ -25,41 +25,21 @@ const MoveListBox = (props) => {
     }
     return (
         <Swipeable
-            renderLeftActions = {leftSwipe}
-        >
-            <ListItem >     
-                <View style={{alignItems:"baseline",flex:1}}>
+            renderLeftActions = {leftSwipe}>
+            <ListItem> 
+                <View style = {{flex : 3, flexDirection : 'column', alignItems : 'flex-start'}}>
                     <Text style={{fontWeight:"bold"}}>{props.data.item.itm_nm}</Text>
+                    <Text>{props.data.item.mng_no}</Text>         
                     <Text>{props.data.item.spec}</Text>
-                    <Text>{props.data.item.itm_cd}</Text>
-                </View>           
-                {/* <View style={{alignItems:"center", justifyContent : 'space-around', flex:1}}>
-                    <Text>{props.data.item.mng_no}</Text>
-                </View>   */}
-                <View style={{alignItems:"center", justifyContent : 'space-around', flex:1, flexDirection : 'row', paddingLeft : 0}}>
-                    <Text style ={{paddingRight : 10, paddingLeft : 10}}>{props.data.item.mng_no}</Text>
-                    <Input keyboardType = 'numeric'/>
-                    <Text >EA</Text>
-                </View>
-                
-                {/* <Body style = {{flex : 1, flexDirection : 'row'}}>
-                    <View style = {{paddingRight : 15}}>
-                        <Text>{props.data.item.itm_cd}</Text>
-                        <Text>{props.data.item.itm_nm}</Text>                        
-                    </View>                    
-                </Body>
-                <Body style = {{flex : 1, flexDirection : 'row', justifyContent : 'center', alignItems : 'center'}}>
-                    <View>
-                    <Text>{props.data.item.spec}</Text>  
-                        <Text>{props.data.item.mng_no}</Text>
-                    </View>
-                </Body>
-                <Right style = {{ paddingLeft : 20}}>
-                    <Input style = {{paddingLeft : 20}}
-                        keyboardType = 'numeric'
-                    />
-                    <Text >EA</Text>
-                </Right>          */}
+                    <Text>{props.data.item.itm_cd}</Text>                                
+                </View>      
+                <View style = {{flex : 1, alignItems : 'center', paddingLeft : 1, paddingRight : 5}}>
+                    <Text>0</Text>                      
+                </View>     
+                <View style = {{flex : 1, flexDirection : 'row', alignItems : 'center'}}>
+                    <Input keyboardType = 'numeric'/>    
+                    <Text>EA</Text>           
+                </View>  
             </ListItem>
         </Swipeable>
     );
@@ -84,6 +64,6 @@ const styles = StyleSheet.create({
         justifyContent : 'center',
         alignItems : 'center',
         width : 80,
-        height : 80
+        height : 110
     }
 })
