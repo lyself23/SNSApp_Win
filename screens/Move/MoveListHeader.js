@@ -5,20 +5,22 @@ import { Icon, Container, Header, Title, Footer, Content, List, ListItem, Left, 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const MoveListHeader = (props) => {    
     return (
-        <ListItem> 
-                <View style = {{flex : 3, flexDirection : 'column', alignItems : 'flex-start'}}>
-                    <Text style={{fontWeight:"bold"}}>품목명</Text>
-                    <Text>LOTNO</Text>         
+        <Box w = "100%" px={5} py={2} my={2}>
+            <HStack>
+                <VStack>
+                    <Text style={{fontWeight:"bold"}}>품목명</Text>                        
                     <Text>규격</Text>
-                    <Text>품목코드</Text>                                
-                </View>      
-                <View style = {{flex : 1, alignItems : 'center', paddingLeft : 1, paddingRight : 5}}>
+                    <Text>품목코드</Text> 
+                </VStack>
+                <VStack alignItems="center" px = {3}>
+                    <Text>LOTNO</Text> 
                     <Text>박스순번</Text>                      
-                </View>     
-                <View style = {{flex : 1, alignItems : 'center'}}>                    
-                    <Text>수량</Text>           
-                </View>  
-            </ListItem>
+                </VStack> 
+                <VStack alignItems="flex-end" px = {3}>
+                    <Text>재고</Text>
+                </VStack>
+             </HStack>
+        </Box>
        
     );
 };

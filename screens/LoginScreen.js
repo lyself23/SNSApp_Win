@@ -14,6 +14,7 @@ import Main from '../pages/main';
 import LoginInfo from '../common/LoginInfo';
 import ServerInfo from '../common/ServerInfo';
 
+
 //로그인 정보 저장
 function setLogInInfo(userInfo) {
   LoginInfo.reg_id = userInfo.reg_id,
@@ -87,7 +88,6 @@ function LogInScreen({navigation}) {
           >
               <Text style={styles.loginText}>Login</Text>
           </TouchableHighlight>
-
 
           {/* <TouchableHighlight style={styles.buttonContainer} onPress={() => this.onClickListener('restore_password')}>
               <Text>Forgot your password?</Text>

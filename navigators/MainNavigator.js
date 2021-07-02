@@ -2,8 +2,8 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import LogInScreen from '../screens/LoginScreen';
 import MainScreen from '../screens/MainScreen';
-import SearchStockScreen from '../screens/SearchStockScreen';
-import BarcodeScanner from '../screens/BarcodeScanner';
+import SearchStockScreen from '../screens/Search/SearchStockScreen';
+import BarcodeScanner from '../screens/Search/BarcodeScanner';
 import MoveScreen from '../screens/Move/MoveScreen';
 
 const Stack = createStackNavigator();

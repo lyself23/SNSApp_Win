@@ -2,8 +2,8 @@ import React from 'react';
 // import { View, Text } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import MainScreen from '../screens/MainScreen';
-import SearchStockScreen from '../screens/SearchStockScreen';
- import BarcodeScanner from '../screens/BarcodeScanner';
+import SearchStockScreen from '../screens/Search/SearchStockScreen';
+ import BarcodeScanner from '../screens/Search/BarcodeScanner';
 
 const Stack = createStackNavigator();
 

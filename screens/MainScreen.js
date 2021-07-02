@@ -1,166 +1,64 @@
-import React, { Component } from 'react';
-import { Left, Body, Title, Right, Container, Header, Content, Footer, FooterTab, Button, Icon, Text } from 'native-base';
+import * as React from 'react';
+import { Wrap, VStack, HStack, Icon, Text, NativeBaseProvider, StatusBar, Container,
+  ScrollView, Center, Box, Stack, Heading, HamburgerIcon, Button, SimpleGrid, IconButton, 
+  Pressable } from "native-base";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
+import drawerItems from '../common/DrawerMenus';
 import LoginInfo from '../common/LoginInfo';
+import { alignItems } from 'styled-system';
 
+const mainBackColor = '#057DD7'
 
-function MainScreen({navigation}) {
+function MainScreen({navigation}, props) {
   return (
-    <Container>
-      <Header>
-        <Left>
-          <Button transparent>
-            <Icon 
-              name="menu" 
-              onPress = {() => navigation.openDrawer()}/>
-          </Button>
-        </Left>
-        <Body>
-          <Title>HEADER</Title>
-        </Body>
-        <Right>
-          {/* <Button transparent onPress={() => this.props.navigation.goBack()}>
-            <Icon name="menu" />
-          </Button> */}
-        </Right>
-      </Header>
-          
-      <Content>
-        <Button info
-          onPress = { () => navigation.navigate("Stock", {barcodeNo : ""})}
-        >
-          <Text>재고조회</Text>
-        </Button>    
+    <>
+      <StatusBar backgroundColor={mainBackColor} barStyle="light-content" />
 
-        <Button info
-          onPress = { () => navigation.navigate("Move", {barcodeNo : ""})}
+      <Box  backgroundColor={mainBackColor} p = {2} pb = {3}>        
+        <HStack alignItems="center" mt={2} >
+          <Pressable onPress={() => navigation.toggleDrawer()} position="absolute" ml={2} zIndex={1}>
+            <HamburgerIcon ml={2} size="sm" color = 'white'/>
+          </Pressable>
+          <Center flex={1} backgroundColor={mainBackColor}>
+            <Heading size="md" color = 'white'>메인</Heading>
+          </Center>
+        </HStack>   
+      </Box>
+
+      <Box p = {2} border={2} borderBottomColor='gray.300' bg = 'white' borderBottomWidth={2} borderTopWidth = {0} borderLeftWidth = {0} borderRightWidth = {0}
         >
-          <Text>창고이동</Text>
-        </Button>    
-        <Text>{LoginInfo.fac_cd + "," + LoginInfo.co_cd}</Text>
-      </Content>
-      <Footer>
-        <FooterTab>
-          <Button vertical>
-            <Icon name="apps"/>
-            <Text>Apps</Text>
-          </Button>
-          <Button vertical>
-            <Icon name="camera" />
-            <Text>Camera</Text>
-          </Button>
-          <Button vertical active>
-            <Icon active name="navigate" />
-            <Text>Navigate</Text>
-          </Button>
-          <Button vertical>
-            <Icon name="person" />
-            <Text>Contact</Text>
-          </Button>
-        </FooterTab>
-      </Footer>
-    </Container>
+          <HStack justifyContent = 'space-between'>
+            <Text alignItems = 'flex-start'>QUICK MENU</Text>
+            <Pressable onPress={() => alert('test')} alignItems = 'flex-end' mr={2} zIndex={1}>
+              <Text>편집</Text>
+            </Pressable>    
+          </HStack>        
+      </Box>
+
+      <ScrollView>
+        <SimpleGrid columns={2} spacing={10} m = {7}>        
+          {drawerItems.map((menu) => (
+            <>
+              {menu.subMenu.map((subMenu) => (
+                <Pressable onPress = { () => navigation.navigate(subMenu.screen)}>       
+                  <VStack shadow={1}  m = {3}  size={32}  bg="white" rounded="xl">
+                    <Center flex = {0.7}>
+                      <IconButton icon={<Icon color="blue.400" size="2xl" as={<MaterialIcons name={subMenu.icon}/>} />}/>
+                    </Center>
+                    <Center backgroundColor = 'blue' flex = {0.3} bg = 'gray.50' borderBottomRadius = {10}>
+                      <Text bold>{subMenu.label}</Text>
+                      <Text fontSize = "xs" color = "gray.500">{subMenu.enlabel}</Text>
+                    </Center> 
+                  </VStack>
+                </Pressable>
+              ))}
+            </>
+          ))}
+        </SimpleGrid>   
+      </ScrollView>
+    </>
   );
 }
 
 export default MainScreen;
-
-// export default class MainScreen extends Component {
-//     // scanBarcode = () => {
-
-//     //     var that = this;
-//     //     //To Start Scanning
-//     //     if (Platform.OS === 'android') {
-//     //         async function requestCameraPermission() {
-//     //             try {
-//     //                 const granted = await PermissionsAndroid.request(
-//     //                     PermissionsAndroid.PERMISSIONS.CAMERA, {
-//     //                     'title': '카메라 권한 요청',
-//     //                     'message': '바코드를 스캔하기 위해 카메라 권한을 허용해주세요.'
-//     //                 }
-//     //                 )
-//     //                 if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-//     //                     //If CAMERA Permission is granted
-
-//     //                     //TODO BarcodeScanner.js를 호출하세요 
-//     //                     //this가 아니라 that을 사용해야 함 
-//     //                     that.props.navigation.navigate('BarcodeScanner', { onGetBarcode: that.onGetBarcode })
-//     //                 } else {
-//     //                     alert("카메라 권한을 받지 못했습니다.");
-//     //                 }
-//     //             } catch (err) {
-//     //                 alert("카메라 권한 오류: ", err);
-//     //                 console.warn(err);
-//     //             }
-//     //         }
-//     //         //Calling the camera permission function
-//     //         requestCameraPermission();
-//     //     } else {
-//     //         that.props.navigation.navigate('BarcodeScanner', { onGetBarcode: that.onGetBarcode })
-//     //     }
-//     // }
-
-//     // onGetBarcode = (barcodeValue) => {
-//     //     console.log("barcode value: ", barcodeValue);
-//     //     //아래 함수의 파라미터로 문자열만 넘길 수 있음. barcodeValue가 문자열처럼 보이지만 문자열이 아닌 듯. String()는 작동하지 않음. JSON.stringify()는 작동함 
-//     //     Alert.alert("barcode value: ", barcodeValue);
-//     // };
-
-
-//   render() {
-//     return (
-//       <Container>
-//         <Header>
-//           <Left>
-//             <Button transparent onPress={() => this.props.navigation.goBack()}>
-//               <Icon name="menu" />
-//             </Button>
-//           </Left>
-//           <Body>
-//             <Title>Header</Title>
-//           </Body>
-//           <Right>
-//             {/* <Button transparent onPress={() => this.props.navigation.goBack()}>
-//               <Icon name="menu" />
-//             </Button> */}
-//           </Right>
-//         </Header>
-            
-//         <Content>
-//           <Button info
-//             onPress = { () => this.props.navigation.navigate("Stock")}
-//           >
-//             <Text>재고조회</Text>
-//           </Button>
-
-//           <Button info
-//             onPress = {() => this.props.navigation.navigate("BarcodeScanner")}>
-//             <Text>바코드 스캔 : {alert(this.props.barcodeNo)}</Text>
-//           </Button>
-
-
-         
-//         </Content>
-//         <Footer>
-//           <FooterTab>
-//             <Button vertical>
-//               <Icon name="apps"/>
-//               <Text>Apps</Text>
-//             </Button>
-//             <Button vertical>
-//               <Icon name="camera" />
-//               <Text>Camera</Text>
-//             </Button>
-//             <Button vertical active>
-//               <Icon active name="navigate" />
-//               <Text>Navigate</Text>
-//             </Button>
-//             <Button vertical>
-//               <Icon name="person" />
-//               <Text>Contact</Text>
-//             </Button>
-//           </FooterTab>
-//         </Footer>
-//       </Container>
-//     );
-//   }
-// }

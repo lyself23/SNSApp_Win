@@ -2,7 +2,7 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import MainScreen from '../screens/MainScreen';
 import MoveScreen from '../screens/Move/MoveScreen';
-import BarcodeScanner from '../screens/BarcodeScanner';
+import BarcodeScanner from '../screens/Move/BarcodeScanner';
  
 const Stack = createStackNavigator();
 

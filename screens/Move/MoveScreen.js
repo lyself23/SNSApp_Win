@@ -1,10 +1,28 @@
 import React from 'react';
-import { Item, Label, Input, Left, Body, Title, Right, Container, Header, Content, Button, Icon, Picker} from 'native-base';
- import { DataTable, IconButton} from 'react-native-paper';
+ import { SafeAreaView, View, StyleSheet, StatusBar } from 'react-native';
+import {
+  Select,
+  VStack,
+  HamburgerIcon,
+  ArrowBackIcon,
+  Pressable,
+  Heading,
+  Center,
+  HStack,
+  CheckIcon,
+  Input,
+  Text,
+  useColorModeValue,
+  Button,
+  Icon,
+  Box,
+  FlatList,
+  NativeBaseProvider
+} from 'native-base';
+import MaterialCommunityIcons from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import LoginInfo from '../../common/LoginInfo';
 import ServerInfo from '../../common/ServerInfo';
-import { SafeAreaView, View, FlatList, StyleSheet, Text, StatusBar } from 'react-native';
 import MoveListBox from './MoveListBox';
 import MoveListHeader from './MoveListHeader';
 
@@ -27,8 +45,6 @@ function MoveScreen ({navigation, route}) {
       setLotList(arr);
   }
 
-
-
   React.useEffect(() => {    
     let url = ServerInfo.serverURL + '/api/getWarehouseList/';
     url += LoginInfo.fac_cd + '/\'\'/4';
@@ -42,6 +58,7 @@ function MoveScreen ({navigation, route}) {
 
     url = ServerInfo.serverURL + '/api/getWarehouseList/';
     url += LoginInfo.fac_cd + '/\'\'/3';
+    console.log(url)
     axios.get(url)
     .then( response => {   
         setWareHouseOutList(response.data);
@@ -71,7 +88,7 @@ React.useEffect(() => {
         .then( response => {
             if(response.data.name === 'ERROR') {
                 alert(response.data.message);
-            } else {                 
+            } else {            
                 setScanData(response.data);        
             }
             setLotNo('');
@@ -104,185 +121,110 @@ React.useEffect(() => {
 
 
     return (
-        <Container>
-            <Header>
-                <Left>
-                    <Button transparent>
-                    <Icon name='arrow-back' 
-                        onPress = {() => navigation.goBack()}/>
-                    </Button>
-                </Left>
-                <Body>
-                    <Title>창고 이동</Title>
-                </Body>
-                <Right>
-                    <Button transparent>
-                    <Icon name='menu' 
-                        onPress = {() => navigation.openDrawer()}/>
-                    </Button>
-                </Right>
-            </Header>
-           
-            <View style = {{flex : 0.25, flexDirection : 'row', paddingTop : 20}}>
-                <View style = {{flex : 1, flexDirection: "column"}}>
-                    <Text>출고창고</Text>
-                    <Picker
-                        mode="dropdown"
-                        style={{ width: undefined }}
+        <>
+            <Box  backgroundColor='#057DD7' p = {2} pb = {3}> 
+                <HStack alignItems="center" mt={2}>
+                    <Pressable onPress={() => navigation.goBack()} margin={2} zIndex={1}>
+                        <ArrowBackIcon ml={2} size="sm" color = 'white'/>
+                    </Pressable>
+                    <Center flex={1} >
+                        <Heading size="md" color = 'white'>창고 이동</Heading>
+                    </Center>
+                    <Pressable onPress={() => navigation.toggleDrawer()} margin={2} zIndex={1}>
+                        <HamburgerIcon mr={2} size="sm" color = 'white'/>
+                    </Pressable>
+                </HStack>  
+            </Box>
+            <Center py = {3} mt = {2} bg = 'gray.50'>
+                <VStack w = "90%">     
+                    <Text alignItems = 'flex-start'>조회조건</Text>                 
+                    <Select m = {1}
+                        InputLeftElement={<Text m = {3}>출고창고</Text>}
+                        selectedValue={undefined}
+                        accessibilityLabel="창고 선택"
                         placeholder="출고창고"
-                        placeholderStyle={{ color: "#bfc6ea" }}
-                        placeholderIconColor="#007aff"
-                        selectedValue={undefined}
-                        value = {whOutCode}
                         onValueChange = {value => setWhOutCode(value)}
-                    >       
-                    {(wareHouseOutList.length > 0 ? (
-                        wareHouseOutList.map(item => (
-                            <Picker.Item key = {item.wh_cd} label={item.wh_nm} value={item.wh_cd} />
-                        ))
-                        ) : (
-                        <></> 
-                        ))}                
-                    </Picker>
-                </View>
-                <View style = {{flex : 1, flexDirection: "column"}}>
-                    <Text>입고창고</Text>
-                    <Picker
-                        mode="dropdown"
-                        style={{ width: undefined }}
-                        placeholder="입고창고"
-                        placeholderStyle={{ color: "#bfc6ea" }}
-                        placeholderIconColor="#007aff"
-                        selectedValue={undefined}
-                        value = {whInCode}
-                        onValueChange = {value => setWhInCode(value)}
-                    >       
-                    {(wareHouseInList.length > 0 ? (
-                        wareHouseInList.map(item => (
-                            <Picker.Item key = {item.wh_cd} label={item.wh_nm} value={item.wh_cd} />
-                        ))
-                        ) : (
-                        <></> 
-                        ))}                       
-                    </Picker>
-                </View> 
-            </View>   
+                        //value = {whOutCode}
+                        _selectedItem={{
+                        bg: "cyan.600",
+                        endIcon: <CheckIcon size={4} />,
+                        }}
+                    >
 
-            <View style = {{flex : 0.5, flexDirection : 'row', paddingTop : 40, paddingBottom : 40}}>
-                <Item regular style = {{flex : 1, marginLeft : 20, marginRight : 20}}>
-                    <Label>LOTNO</Label>
-                    <Input
-                        value = {lotNo}
-                        autoFocus = {true}
-                        autoCapitalize = 'characters'
-                        keyboardType = 'email-address'
-                        onChangeText = {value => setLotNo(value)} 
-                        returnKeyType = 'none'
-                        onKeyPress = {getLotData}                            
-                    />
-                </Item>  
-                <Button bordered>
-                    <Icon name = 'camera' 
-                        onPress = {() => navigation.navigate("BarcodeScanner", {screenName : 'Move', ismultiScan : false})}/>
-                </Button>
-            </View>        
-            
-            <FlatList style = {{flex : 1}}
-                   data = {lotList}
-                   renderItem = {(item, index) => {
-                       return <MoveListBox data = {item} handleDelete = {() => deleteItem(index)} />;
-                   }}
-                   ListHeaderComponent = {MoveListHeader}
-                 //  removeClippedSubviews = {false}
-                 //  stickyHeaderIndices = {[0]}
-                   keyExtractor = {(item, index) => index.toString()}
-                //   ItemSeparatorComponent = {() => {<View style = {{height:1, backgroundColor: 'black'}}></View>}}
-                />
-
-
-            {/* <Content style = {{flex : 1}}>
-                <View style = {{flex : 1, flexDirection: "row"}}>
-                    <View style = {{flex : 1, flexDirection: "column"}}>
-                        <Text>출고창고</Text>
-                        <Picker
-                            mode="dropdown"
-                            style={{ width: undefined }}
-                            placeholder="출고창고"
-                            placeholderStyle={{ color: "#bfc6ea" }}
-                            placeholderIconColor="#007aff"
-                            selectedValue={undefined}
-                            value = {whOutCode}
-                            onValueChange = {value => setWhOutCode(value)}
-                        >       
                         {(wareHouseOutList.length > 0 ? (
                             wareHouseOutList.map(item => (
-                                <Picker.Item key = {item.wh_cd} label={item.wh_nm} value={item.wh_cd} />
+                                <Select.Item key = {item.wh_cd} label={item.wh_nm} value={item.wh_cd} />
                             ))
                             ) : (
                             <></> 
-                            ))}                
-                        </Picker>
-                    </View>
-                    <View style = {{flex : 1, flexDirection: "column"}}>
-                        <Text>입고창고</Text>
-                        <Picker
-                            mode="dropdown"
-                            style={{ width: undefined }}
-                            placeholder="입고창고"
-                            placeholderStyle={{ color: "#bfc6ea" }}
-                            placeholderIconColor="#007aff"
-                            selectedValue={undefined}
-                            value = {whInCode}
-                            onValueChange = {value => setWhInCode(value)}
-                        >       
+                            ))}
+                    </Select>
+                    <Select m = {1}
+                        InputLeftElement={<Text m = {3}>입고창고</Text>}
+                        selectedValue={undefined}
+                        accessibilityLabel="창고 선택"
+                        value = {whInCode}
+                        onValueChange = {value => setWhInCode(value)}
+                        _selectedItem={{
+                        bg: "cyan.600",
+                        endIcon: <CheckIcon size={4} />,
+                        }}
+                    >
+
                         {(wareHouseInList.length > 0 ? (
                             wareHouseInList.map(item => (
-                                <Picker.Item key = {item.wh_cd} label={item.wh_nm} value={item.wh_cd} />
+                                <Select.Item key = {item.wh_cd} label={item.wh_nm} value={item.wh_cd} />
                             ))
                             ) : (
                             <></> 
-                            ))}                       
-                        </Picker>
-                    </View>                    
-                </View>
-                <View style = {{flex : 1, flexDirection: "row"}}>
-                    <Item stackedLabel style = {{flex : 1, marginLeft : 20, marginRight : 20}}>
-                        <Label>LOTNO</Label>
-                        <Input
-                            value = {lotNo}
-                            autoFocus = {true}
-                            autoCapitalize = 'characters'
-                            keyboardType = 'email-address'
-                            onChangeText = {value => setLotNo(value)} 
-                            returnKeyType = 'none'
-                            onKeyPress = {getLotData}                            
-                        />
-                    </Item>  
-                        <Button bordered>
-                            <Icon name = 'camera' 
-                                onPress = {() => navigation.navigate("BarcodeScanner", {screenName : 'Move', ismultiScan : false})}/>
-                        </Button> 
-                </View>              
-            </Content>
-
-            <FlatList style = {{flex : 0.5}}
+                            ))}
+                    </Select>
+                    <Input  m = {1}
+                    value = {lotNo}
+                    onChangeText = {value => setLotNo(value)} 
+                    returnKeyType = 'none'
+                    onKeyPress = {getLotData}        
+                    autoCapitalize = 'characters'   
+                    keyboardType = 'email-address'   
+                    bg="#fff"
+                    borderRadius={4}
+                    py={3}
+                    px={1}
+                    fontSize={14}
+                    _web={{
+                        _focus: { borderColor: 'muted.300', style: { boxShadow: 'none' } },
+                        }}
+                        InputLeftElement={<Text m = {3}>LOTNO</Text>}
+                        InputRightElement={<Icon size='sm'  m = {1} size={6} 
+                                            color="gray.400" as={<MaterialCommunityIcons name="camera" 
+                                            onPress = {() => navigation.navigate("BarcodeScanner", {screenName : 'Move', ismultiScan : false})}/>} />}
+                    />
+                    {isLoading ? (
+                        <Button isLoading  m = {1}>
+                        Button</Button>
+                    ) : (
+                        <Button  m = {1}
+                            //onPress = {search}
+                        >
+                            조회
+                            </Button>
+                    )}      
+                </VStack>                
+            </Center>
+            <Box border = {1} borderColor = 'gray.300'/>
+            <Box mt = {3} p = {2} border={2} borderBottomColor='gray.300' bg = 'white' borderBottomWidth={2} borderTopWidth = {0} borderLeftWidth = {0} borderRightWidth = {0}>검색결과</Box>
+            <FlatList flex = {1} bg={useColorModeValue("gray.50", "gray.700")}
                    data = {lotList}
                    renderItem = {(item, index) => {
-                       return <MoveListBox data = {item} handleDelete = {() => deleteItem(index)} />;
+                       return <MoveListBox data = {item} />;
                    }}
-                   ListHeaderComponent = {MoveListHeader}
+                 //  ListHeaderComponent = {MoveListHeader}
                  //  removeClippedSubviews = {false}
                  //  stickyHeaderIndices = {[0]}
                    keyExtractor = {(item, index) => index.toString()}
                 //   ItemSeparatorComponent = {() => {<View style = {{height:1, backgroundColor: 'black'}}></View>}}
-                />
-
-            <Button block style = {{marginTop:20, marginLeft : 10, marginRight : 10}}
-                    onPress = {save}
-            >
-                <Text>등록</Text>
-            </Button> */}
-        </Container>
+                />   
+        </>      
     )
 };
 
