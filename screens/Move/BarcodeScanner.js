@@ -2,6 +2,9 @@ import {RNCamera} from 'react-native-camera';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import React, {useEffect, useRef} from 'react';
 import { NavigationEvents } from 'react-navigation';
+import LoginInfo from '../../common/LoginInfo';
+import ServerInfo from '../../common/ServerInfo';
+import axios from 'axios';
 import {
   StyleSheet,
   Animated,
@@ -11,11 +14,43 @@ import {
   View,
   Text,
 } from 'react-native';
+import {  useToast, Button } from 'native-base';
  
 let camera;
  
 function BarcodeScanner({navigation, route}) {
+  
+  const toast = useToast();
   const moveAnim = useRef(new Animated.Value(-2)).current;
+  const [lotList, setLotList] = React.useState([]);
+  const [scanData, setScanData] = React.useState([]);
+
+  const getLotData = (cameraData) => {
+    if(cameraData === '') {
+        alert('LOTNO를 스캔해주세요');
+    } else {
+      let url = ServerInfo.serverURL + '/api/scanMoveList/';
+      url += LoginInfo.fac_cd + '/';
+      url += cameraData + '/' + route.params.whCode + '/2/\'\'';
+      
+      axios.get(url)
+      .then( response => {
+          if(response.data.name === 'ERROR') {
+              alert(response.data.message);
+          } else {         
+            setScanData(response.data);              
+          }          
+      })
+      .catch ( error => {
+        alert("창고에러 : " + error.message);
+      })
+      .finally(() => {
+        setTimeout(() => {
+          setBarcode(null);
+        }, 2000);
+      });
+    }
+}
  
   useEffect(() => {
     requestCameraPermission();
@@ -63,11 +98,13 @@ function BarcodeScanner({navigation, route}) {
       }),
     ]).start(() => startAnimation());
   };
-  const onBarCodeRead = (result) => {
-    const {data} = result; //Just get data
-    //Operation after scanning the code
-    console.log("scan : " + data);
 
+  const onBarCodeRead = (result) => {
+    console.log('onBarcodeRead', result);
+    const {data} = result; //Just get data
+    setBarcode(data)
+    console.log
+    //Operation after scanning the code
     //하나의 코드만 스캔할 경우는 이전 화면으로 이동
     if(route.params.ismultiScan === false) {
       navigation.navigate({
@@ -75,11 +112,29 @@ function BarcodeScanner({navigation, route}) {
         params: { barcodeNo: data },
         merge: true,
       });
-    } else {
-      alert('카메라');      
+    } else {     
+      console.log(lotList)
+     
+      if(lotList.findIndex(obj => obj.mng_no == data) === -1) {
+        console.log('진입');
+        getLotData(data);
+        setLotList(lotList.concat(scanData));     
+        toast.show({title: data,  placement: "top",})
+      }
     }
   };
- 
+
+  const defaultBarCodeTypes = [
+    RNCamera.Constants.BarCodeType.ean13,
+    RNCamera.Constants.BarCodeType.ean8,
+  ];
+  
+  
+  const [barcode, setBarcode] = React.useState(null);
+  const barCodeTypes = barcode ? [] : defaultBarCodeTypes;
+
+  console.log(barCodeTypes)
+
   return (
     <View style={styles.container}>
       <RNCamera
@@ -90,6 +145,7 @@ function BarcodeScanner({navigation, route}) {
         style={[styles.preview]}
         type={RNCamera.Constants.Type.back} /*Switch front and rear cameras front, back and back*/
         flashMode={RNCamera.Constants.FlashMode.off} /*Camera flash mode*/
+        barCodeTypes={barCodeTypes}    
         onBarCodeRead={onBarCodeRead}>
         <View
           style={{
@@ -130,9 +186,16 @@ function BarcodeScanner({navigation, route}) {
             width: 500,
             alignItems: 'center',
           }}>
-          <Text style={styles.rectangleText}>
-                         Put the QR code in the box and it will scan automatically
-          </Text>
+          <Text style={styles.rectangleText}>바코드를 스캔해주세요</Text>
+          <Button size = "xs" 
+            colorScheme="danger" 
+            onPress={() => navigation.navigate({
+            name: route.params.screenName,
+            params: { barcodeNo: lotList },
+            merge: true,})}
+          >
+           닫기
+          </Button>
         </View>
       </RNCamera>
     </View>

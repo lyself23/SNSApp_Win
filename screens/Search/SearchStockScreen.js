@@ -53,7 +53,7 @@ function SearchStockScreen({navigation, route}) {
 
   //route가 변경될 때마다 실행
   React.useEffect(() => {
-    setLotNo(route.params.barcodeNo);    
+    setLotNo(route.params.barcodeNo);  
   }, [route])
 
   const search = () => {

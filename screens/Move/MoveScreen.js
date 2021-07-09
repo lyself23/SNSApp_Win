@@ -1,30 +1,58 @@
 import React from 'react';
  import { SafeAreaView, View, StyleSheet, StatusBar } from 'react-native';
-import {
-  Select,
-  VStack,
-  HamburgerIcon,
-  ArrowBackIcon,
-  Pressable,
-  Heading,
-  Center,
-  HStack,
-  CheckIcon,
-  Input,
-  Text,
-  useColorModeValue,
-  Button,
-  Icon,
-  Box,
-  FlatList,
-  NativeBaseProvider
-} from 'native-base';
-import MaterialCommunityIcons from 'react-native-vector-icons/FontAwesome';
+import {  
+  Select,  VStack,  HamburgerIcon,  ArrowBackIcon,  Pressable,  Heading,
+  Center,  HStack,  CheckIcon,  Input,  Text,  useColorModeValue,  Button,
+  Icon,  Box,  FlatList,  NativeBaseProvider, AlertDialog, PresenceTransition} from 'native-base';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import LoginInfo from '../../common/LoginInfo';
 import ServerInfo from '../../common/ServerInfo';
 import MoveListBox from './MoveListBox';
 import MoveListHeader from './MoveListHeader';
+import CameraScanner from './CameraScanner'
+
+function AlertDialogComponent() {
+    const [isOpen, setIsOpen] = React.useState(false);
+    const onClose = () => setIsOpen(false);
+    const cancelRef = React.useRef();
+    const onDelete = () => {      
+            alert('test');
+            setIsOpen(false);        
+    }
+    return (
+      <Center>
+        <AlertDialog
+          leastDestructiveRef={cancelRef}
+          isOpen={isOpen}
+          onClose={onClose}
+          motionPreset={"fade"}
+        >
+          <AlertDialog.Content>
+            <AlertDialog.Header fontSize="lg" fontWeight="bold">
+              전체 삭제
+            </AlertDialog.Header>
+            <AlertDialog.Body>
+              스캔한 내역을 전부 삭제하시겠습니까?
+            </AlertDialog.Body>
+            <AlertDialog.Footer>
+              <Button ref={cancelRef} onPress={onClose}>
+                취소
+              </Button>
+              <Button colorScheme="red" onPress={onDelete} ml={3}>
+                삭제
+              </Button>
+            </AlertDialog.Footer>
+          </AlertDialog.Content>
+        </AlertDialog>
+        <Button size = "xs" colorScheme="danger" onPress={() => setIsOpen(!isOpen)}>
+          전체 삭제
+        </Button>
+      </Center>
+    );
+  }
+
+
 
 function MoveScreen ({navigation, route}) {
   const [wareHouseInList, setWareHouseInList] = React.useState([]); 
@@ -38,6 +66,7 @@ function MoveScreen ({navigation, route}) {
   const [scanData, setScanData] = React.useState([]);
 
   const [isLoading, setIsLoading] = React.useState(false);
+  const [isCameraOpen, setIsCameraOpen] = React.useState(false)
 
   const deleteItem = index => {
       const arr = [...lotList];
@@ -47,7 +76,7 @@ function MoveScreen ({navigation, route}) {
 
   React.useEffect(() => {    
     let url = ServerInfo.serverURL + '/api/getWarehouseList/';
-    url += LoginInfo.fac_cd + '/\'\'/4';
+    url += LoginInfo.fac_cd + '/\'\'/5';
     axios.get(url)
     .then( response => {   
         setWareHouseInList(response.data);
@@ -57,8 +86,7 @@ function MoveScreen ({navigation, route}) {
     });
 
     url = ServerInfo.serverURL + '/api/getWarehouseList/';
-    url += LoginInfo.fac_cd + '/\'\'/3';
-    console.log(url)
+    url += LoginInfo.fac_cd + '/\'\'/5';
     axios.get(url)
     .then( response => {   
         setWareHouseOutList(response.data);
@@ -70,7 +98,7 @@ function MoveScreen ({navigation, route}) {
 
   //route가 변경될 때마다 실행
   React.useEffect(() => {
-    setLotNo(route.params.barcodeNo);  
+    setScanData(route.params.barcodeNo);
   }, [route])
 
 React.useEffect(() => {
@@ -79,36 +107,35 @@ React.useEffect(() => {
 
   const getLotData = (e) => {
       if(e.nativeEvent.key === "Enter") {
-        let url = ServerInfo.serverURL + '/api/scanMoveList/';
-        url += LoginInfo.fac_cd + '/';
-        url += lotNo + '/' + whOutCode + '/2/\'\'';
-        
-        console.log(url);
-        axios.get(url)
-        .then( response => {
-            if(response.data.name === 'ERROR') {
-                alert(response.data.message);
-            } else {            
-                setScanData(response.data);        
-            }
-            setLotNo('');
-        })
-        .catch ( error => {
-          alert("창고에러 : " + error.message);
-        });
+          if(lotNo === '') {
+              alert('LOTNO를 스캔해주세요');
+          } else {
+            let url = ServerInfo.serverURL + '/api/scanMoveList/';
+            url += LoginInfo.fac_cd + '/';
+            url += lotNo + '/' + whOutCode + '/2/\'\'';
+            
+            axios.get(url)
+            .then( response => {
+                if(response.data.name === 'ERROR') {
+                    alert(response.data.message);
+                } else {            
+                    setScanData(response.data);        
+                }
+                setLotNo('');
+            })
+            .catch ( error => {
+            alert("창고에러 : " + error.message);
+            });
+          }
       }
   }
 
   const save = () => {
     let url = ServerInfo.serverURL + '/api/MoveLotNo';    
-    let object = [{test1 : 3, test2 : 'asdfdd'}, {test1 : 2, test2 : 'aszzdfdd'}];
-
     let formdata = new FormData();
     formdata.append('data', JSON.stringify(object));
 
-    // setIsLoading( true );
-
-    params.append()
+     params.append()
     console.log(url);
     axios.post(url, formdata)
       .then( response => {
@@ -119,6 +146,9 @@ React.useEffect(() => {
       });
   };
 
+  const onPress = () => {
+    navigation.navigate("BarcodeScanner", {screenName : 'Move', ismultiScan : true, whCode : whOutCode})
+  }
 
     return (
         <>
@@ -135,11 +165,11 @@ React.useEffect(() => {
                     </Pressable>
                 </HStack>  
             </Box>
-            <Center py = {3} mt = {2} bg = 'gray.50'>
+            <Center py = {2} bg = 'gray.50'>
                 <VStack w = "90%">     
-                    <Text alignItems = 'flex-start'>조회조건</Text>                 
-                    <Select m = {1}
-                        InputLeftElement={<Text m = {3}>출고창고</Text>}
+                    <Text fontSize = "sm" alignItems = 'flex-start'>조회조건</Text>                 
+                    <Select m = {1} size = "sm"
+                        InputLeftElement={<Text fontSize = "sm" m = {3}>출고창고</Text>}
                         selectedValue={undefined}
                         accessibilityLabel="창고 선택"
                         placeholder="출고창고"
@@ -159,11 +189,11 @@ React.useEffect(() => {
                             <></> 
                             ))}
                     </Select>
-                    <Select m = {1}
-                        InputLeftElement={<Text m = {3}>입고창고</Text>}
+                    <Select m = {1} size = "sm"
+                        InputLeftElement={<Text fontSize = "sm" m = {3}>입고창고</Text>}
                         selectedValue={undefined}
                         accessibilityLabel="창고 선택"
-                        value = {whInCode}
+                       // value = {whInCode}
                         onValueChange = {value => setWhInCode(value)}
                         _selectedItem={{
                         bg: "cyan.600",
@@ -179,7 +209,7 @@ React.useEffect(() => {
                             <></> 
                             ))}
                     </Select>
-                    <Input  m = {1}
+                    <Input  m = {1} size = "sm"
                     value = {lotNo}
                     onChangeText = {value => setLotNo(value)} 
                     returnKeyType = 'none'
@@ -194,36 +224,62 @@ React.useEffect(() => {
                     _web={{
                         _focus: { borderColor: 'muted.300', style: { boxShadow: 'none' } },
                         }}
-                        InputLeftElement={<Text m = {3}>LOTNO</Text>}
-                        InputRightElement={<Icon size='sm'  m = {1} size={6} 
-                                            color="gray.400" as={<MaterialCommunityIcons name="camera" 
-                                            onPress = {() => navigation.navigate("BarcodeScanner", {screenName : 'Move', ismultiScan : false})}/>} />}
+                        InputLeftElement={<Text fontSize = "sm" m = {3}>LOTNO</Text>}
+                        InputRightElement={<Icon size='md' mr = {3}
+                                            color="gray.400" 
+                                            as={<MaterialIcons 
+                                                  name="camera-alt" 
+                                                  onPress = {onPress}
+                                                />} 
+                                          />}
                     />
-                    {isLoading ? (
-                        <Button isLoading  m = {1}>
-                        Button</Button>
-                    ) : (
-                        <Button  m = {1}
-                            //onPress = {search}
-                        >
-                            조회
-                            </Button>
-                    )}      
+                    <PresenceTransition
+                      visible={isCameraOpen}
+                      initial={{
+                        opacity: 0,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        transition: {
+                          duration: 250,
+                        },
+                      }}
+                    >
+                       <CameraScanner p = "40px" m = {1}/>
+                    </PresenceTransition>
+                   
                 </VStack>                
             </Center>
+            
             <Box border = {1} borderColor = 'gray.300'/>
-            <Box mt = {3} p = {2} border={2} borderBottomColor='gray.300' bg = 'white' borderBottomWidth={2} borderTopWidth = {0} borderLeftWidth = {0} borderRightWidth = {0}>검색결과</Box>
+            <Box mt = {3} 
+                 p = {2} 
+                 border={2} 
+                 borderBottomColor='gray.300' 
+                 bg = 'white' borderBottomWidth={2} borderTopWidth = {0} borderLeftWidth = {0} borderRightWidth = {0}
+            >
+                <HStack>
+                    <Text fontSize = "sm">스캔 개수 : {lotList.length}    </Text>
+                    <AlertDialogComponent />
+                </HStack>
+            </Box>
             <FlatList flex = {1} bg={useColorModeValue("gray.50", "gray.700")}
                    data = {lotList}
                    renderItem = {(item, index) => {
-                       return <MoveListBox data = {item} />;
+                        return <MoveListBox data = {item} handleDelete = {() => deleteItem(index)} />; 
                    }}
-                 //  ListHeaderComponent = {MoveListHeader}
-                 //  removeClippedSubviews = {false}
-                 //  stickyHeaderIndices = {[0]}
                    keyExtractor = {(item, index) => index.toString()}
-                //   ItemSeparatorComponent = {() => {<View style = {{height:1, backgroundColor: 'black'}}></View>}}
-                />   
+                />  
+             {isLoading ? (
+                <Button isLoading  m = {1}>
+                Button</Button>
+            ) : (
+                <Button  m = {1}
+                    //onPress = {search}
+                >
+                    등록
+                    </Button>
+            )}       
         </>      
     )
 };

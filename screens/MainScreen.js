@@ -40,18 +40,19 @@ function MainScreen({navigation}, props) {
         <SimpleGrid columns={2} spacing={10} m = {7}>        
           {drawerItems.map((menu) => (
             <>
-              {menu.subMenu.map((subMenu) => (
-                <Pressable onPress = { () => navigation.navigate(subMenu.screen)}>       
+              {menu.subMenu.map((subMenu) => (   
                   <VStack shadow={1}  m = {3}  size={32}  bg="white" rounded="xl">
                     <Center flex = {0.7}>
-                      <IconButton icon={<Icon color="blue.400" size="2xl" as={<MaterialIcons name={subMenu.icon}/>} />}/>
+                      <IconButton 
+                        icon={<Icon color="blue.400" size="2xl" as={<MaterialIcons name={subMenu.icon}/>} 
+                        onPress = { () => navigation.navigate(subMenu.screen)}
+                      />}/>
                     </Center>
                     <Center backgroundColor = 'blue' flex = {0.3} bg = 'gray.50' borderBottomRadius = {10}>
                       <Text bold>{subMenu.label}</Text>
                       <Text fontSize = "xs" color = "gray.500">{subMenu.enlabel}</Text>
                     </Center> 
                   </VStack>
-                </Pressable>
               ))}
             </>
           ))}
