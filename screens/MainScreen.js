@@ -37,25 +37,77 @@ function MainScreen({navigation}, props) {
       </Box>
 
       <ScrollView>
-        <SimpleGrid columns={2} spacing={10} m = {7}>        
-          {drawerItems.map((menu) => (
-            <>
-              {menu.subMenu.map((subMenu) => (   
-                  <VStack shadow={1}  m = {3}  size={32}  bg="white" rounded="xl">
-                    <Center flex = {0.7}>
-                      <IconButton 
-                        icon={<Icon color="blue.400" size="2xl" as={<MaterialIcons name={subMenu.icon}/>} 
-                        onPress = { () => navigation.navigate(subMenu.screen)}
-                      />}/>
-                    </Center>
-                    <Center backgroundColor = 'blue' flex = {0.3} bg = 'gray.50' borderBottomRadius = {10}>
-                      <Text bold>{subMenu.label}</Text>
-                      <Text fontSize = "xs" color = "gray.500">{subMenu.enlabel}</Text>
-                    </Center> 
-                  </VStack>
-              ))}
-            </>
-          ))}
+        <SimpleGrid columns={2} spacing={10} m = {7}>    
+          {(drawerItems.map((menu, index) => (
+            menu.subMenu.length > 0 ? (
+              //하위메뉴 있을 때
+              menu.subMenu.map((subMenu, subIndex) => (
+                <VStack key = {subIndex} shadow={1}  m = {3}  size={32}  bg="white" rounded="xl">
+                  <Center flex = {0.7}>
+                    <IconButton 
+                      icon={<Icon color="blue.400" size="2xl" as={<MaterialIcons name={subMenu.icon}/>} 
+                      onPress = { () => navigation.navigate(subMenu.screen)}
+                    />}/>
+                  </Center>
+                  <Center backgroundColor = 'blue' flex = {0.3} bg = 'gray.50' borderBottomRadius = {10}>
+                    <Text bold>{subMenu.label}</Text>
+                    <Text fontSize = "xs" color = "gray.500">{subMenu.enlabel}</Text>
+                  </Center> 
+                </VStack>
+              ))
+            ) : (
+              //하위메뉴 없을 때
+              <VStack key = {index} shadow={1}  m = {3}  size={32}  bg="white" rounded="xl">
+                <Center flex = {0.7}>
+                  <IconButton 
+                    icon={<Icon color="blue.400" size="2xl" as={<MaterialIcons name={menu.icon}/>} 
+                    onPress = { () => navigation.navigate(menu.screen)}
+                  />}/>
+                </Center>
+                <Center backgroundColor = 'blue' flex = {0.3} bg = 'gray.50' borderBottomRadius = {10}>
+                  <Text bold>{menu.label}</Text>
+                  <Text fontSize = "xs" color = "gray.500">{menu.enlabel}</Text>
+                </Center> 
+              </VStack>
+            )
+          )))}
+
+
+          {/* {(drawerItems.map((menu, index) => (
+            menu.subMenu.length > 0 ? (
+              //하부 메뉴 있을 때
+              <>
+                {menu.subMenu.map((subMenu, index) => ( 
+                    <VStack key = {index} shadow={1}  m = {3}  size={32}  bg="white" rounded="xl">
+                      <Center flex = {0.7}>
+                        <IconButton 
+                          icon={<Icon id = {subMenu.id} color="blue.400" size="2xl" as={<MaterialIcons name={subMenu.icon}/>} 
+                          onPress = { () => navigation.navigate(subMenu.screen)}
+                        />}/>
+                      </Center>
+                      <Center backgroundColor = 'blue' flex = {0.3} bg = 'gray.50' borderBottomRadius = {10}>
+                        <Text bold>{subMenu.label}</Text>
+                        <Text fontSize = "xs" color = "gray.500">{subMenu.enlabel}</Text>
+                      </Center> 
+                    </VStack>
+                ))}
+              </>
+            ) : (
+              //하부 메뉴 없을 때
+              <VStack key = {index} shadow={1}  m = {3}  size={32}  bg="white" rounded="xl">
+                <Center flex = {0.7}>
+                  <IconButton 
+                    icon={<Icon id = {menu.id} color="blue.400" size="2xl" as={<MaterialIcons name={menu.icon}/>} 
+                    onPress = { () => navigation.navigate(menu.screen)}
+                  />}/>
+                </Center>
+                <Center backgroundColor = 'blue' flex = {0.3} bg = 'gray.50' borderBottomRadius = {10}>
+                  <Text bold>{menu.label}</Text>
+                  <Text fontSize = "xs" color = "gray.500">{menu.enlabel}</Text>
+                </Center> 
+              </VStack>
+            )
+          )))} */}
         </SimpleGrid>   
       </ScrollView>
     </>

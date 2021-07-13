@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
-import { NativeBaseProvider, Button, View, Box, HamburgerIcon, Pressable,
+import { NativeBaseProvider, Button, IconButton, Box, HamburgerIcon, Pressable,
     Heading, VStack, Text, Center, HStack, Divider, Icon } from 'native-base';
 
 import { createDrawerNavigator, DrawerContentScrollView } from '@react-navigation/drawer';
@@ -54,12 +54,15 @@ function Component(props) {
         <VStack divider={<Divider />} space={4} bg = 'white'>
           <VStack>
             {drawerItems.map((menu, index) => (
+            
                 <List.Accordion
+                  key = {index}
                   style = {{backgroundColor : 'white'}}
-                  title={menu.mainName}
-                  left={props => <List.Icon {...props} icon={menu.icon} />}>
+                  title={menu.label}
+                  left={props => <List.Icon {...props} icon={menu.icon} />}
+                  >
                     {menu.subMenu.map((sub, index) => (
-                      <List.Item title={sub.label} onPress={(event) => {props.navigation.navigate(sub.screen)}}/>
+                      <List.Item key = {index} title={sub.label} onPress={(event) => {props.navigation.navigate(sub.screen)}}/>
                     ))}
                 </List.Accordion>         
             ))}

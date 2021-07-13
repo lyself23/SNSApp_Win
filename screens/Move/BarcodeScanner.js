@@ -1,7 +1,5 @@
 import {RNCamera} from 'react-native-camera';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import React, {useEffect, useRef} from 'react';
-import { NavigationEvents } from 'react-navigation';
 import LoginInfo from '../../common/LoginInfo';
 import ServerInfo from '../../common/ServerInfo';
 import axios from 'axios';
@@ -17,42 +15,36 @@ import {
 import {  useToast, Button } from 'native-base';
  
 let camera;
- 
+let lotList = [];
+
+function getLotData(cameraData, warehousecode) {
+  if(cameraData === '') {
+      alert('LOTNO를 스캔해주세요');
+  } else {
+    let url = ServerInfo.serverURL + '/api/scanMoveList/';
+    url += LoginInfo.fac_cd + '/';
+    url += cameraData + '/' + warehousecode + '/2/\'\'';
+    
+    axios.get(url)
+    .then( response => {
+        if(response.data.name === 'ERROR') {
+            alert(response.data.message);
+        } else {                        
+          lotList.push(response.data)   
+          console.log('1. lotList', lotList);
+        }          
+    })
+    .catch ( error => {
+      alert("창고에러 : " + error.message);
+    });
+  }
+}
+
 function BarcodeScanner({navigation, route}) {
-  
   const toast = useToast();
   const moveAnim = useRef(new Animated.Value(-2)).current;
-  const [lotList, setLotList] = React.useState([]);
-  const [scanData, setScanData] = React.useState([]);
 
-  const getLotData = (cameraData) => {
-    if(cameraData === '') {
-        alert('LOTNO를 스캔해주세요');
-    } else {
-      let url = ServerInfo.serverURL + '/api/scanMoveList/';
-      url += LoginInfo.fac_cd + '/';
-      url += cameraData + '/' + route.params.whCode + '/2/\'\'';
-      
-      axios.get(url)
-      .then( response => {
-          if(response.data.name === 'ERROR') {
-              alert(response.data.message);
-          } else {         
-            setScanData(response.data);              
-          }          
-      })
-      .catch ( error => {
-        alert("창고에러 : " + error.message);
-      })
-      .finally(() => {
-        setTimeout(() => {
-          setBarcode(null);
-        }, 2000);
-      });
-    }
-}
- 
-  useEffect(() => {
+   useEffect(() => {
     requestCameraPermission();
     startAnimation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -100,40 +92,84 @@ function BarcodeScanner({navigation, route}) {
   };
 
   const onBarCodeRead = (result) => {
-    console.log('onBarcodeRead', result);
-    const {data} = result; //Just get data
-    setBarcode(data)
-    console.log
-    //Operation after scanning the code
     //하나의 코드만 스캔할 경우는 이전 화면으로 이동
-    if(route.params.ismultiScan === false) {
+     if(route.params.ismultiScan === false) {
       navigation.navigate({
         name: route.params.screenName,
         params: { barcodeNo: data },
         merge: true,
-      });
-    } else {     
-      console.log(lotList)
-     
-      if(lotList.findIndex(obj => obj.mng_no == data) === -1) {
-        console.log('진입');
-        getLotData(data);
-        setLotList(lotList.concat(scanData));     
-        toast.show({title: data,  placement: "top",})
-      }
+      })
+    } else {  
+      let url = ServerInfo.serverURL + '/api/scanMoveList/';
+      url += LoginInfo.fac_cd + '/';
+      url += result.data + '/' + route.params.whCode + '/2/\'\'';
+      axios.get(url)
+      .then( response => {
+          if(response.data.name === 'ERROR') {
+              alert(response.data.message);
+          } else {       
+              const {data} = result;
+              console.log('길이 : ', lotList.length)
+              if(lotList.length <= 0) {
+                lotList.push(response.data[0])   
+                toast.show({title: data,  placement: "top",})
+                // console.log('1. lotList', lotList);
+              } else {
+                console.log('data : ', data);
+                let arrIndex = lotList.findIndex(ele => ele.mng_no === data)
+                // console.log('arrIndex : ', arrIndex);
+                if(arrIndex === -1) {
+                  // console.log('ele.mng_no : ', ele.mng_no)
+                  // console.log('data : ', data)
+                  lotList.push(response.data[0])   
+                  toast.show({title: data,  placement: "top",})
+                  // console.log('2. lotList', lotList);
+                }
+              }
+        }
+      })          
+      .catch ( error => {
+        alert("창고에러 : " + error.message);
+      });   
     }
-  };
 
-  const defaultBarCodeTypes = [
-    RNCamera.Constants.BarCodeType.ean13,
-    RNCamera.Constants.BarCodeType.ean8,
-  ];
-  
-  
-  const [barcode, setBarcode] = React.useState(null);
-  const barCodeTypes = barcode ? [] : defaultBarCodeTypes;
+    // console.log('onBarcodeRead', result);
+    // const {data} = result; //Just get data
+    // // setBarcode(data)
+    // console.log('data', data)
+    // //Operation after scanning the code
+    // //하나의 코드만 스캔할 경우는 이전 화면으로 이동
+    // if(route.params.ismultiScan === false) {
+    //   navigation.navigate({
+    //     name: route.params.screenName,
+    //     params: { barcodeNo: data },
+    //     merge: true,
+    //   })
+    // } else {     
+    //   // let test = lotList.some(ele => {
+    //   //   console.log('ele.mng_no', ele.mng_no)
+    //   //   console.log('result.data', result.data)
+    //   //   return ele.mng_no === result.data
+    //   // })
+    
 
-  console.log(barCodeTypes)
+    //   // console.log('test', test)
+    //   // getLotData(data);
+
+    //   // if(!test) {        
+    //   //   setLotList(lotList.concat(scanData));     
+    //   // }
+     
+    //   // console.log('lotList 2', lotList.length)
+    //   // if(lotList.findIndex(obj => obj.mng_no == data) === -1) {
+    //   //   console.log('진입');
+    //   //   getLotData(data);
+    //   //   setLotList(lotList.concat(scanData));     
+    //   //   toast.show({title: data,  placement: "top",})
+    //   // }
+    // }
+  };  
+  
 
   return (
     <View style={styles.container}>
@@ -145,7 +181,7 @@ function BarcodeScanner({navigation, route}) {
         style={[styles.preview]}
         type={RNCamera.Constants.Type.back} /*Switch front and rear cameras front, back and back*/
         flashMode={RNCamera.Constants.FlashMode.off} /*Camera flash mode*/
-        barCodeTypes={barCodeTypes}    
+       // barCodeTypes={barCodeTypes}    
         onBarCodeRead={onBarCodeRead}>
         <View
           style={{
@@ -244,201 +280,3 @@ export default BarcodeScanner;
 
 
 
-
-
-// import React, { PureComponent } from 'react';
-// import { AppRegistry, StyleSheet, Text, TouchableOpacity, View, ImageBackground, Animated } from 'react-native';
-//  import { RNCamera } from 'react-native-camera';
-//  import Icon from 'react-native-vector-icons/FontAwesome';
-
-//  const styles = StyleSheet.create({
-//     container: {
-//       flex: 1,
-//       flexDirection: 'column',
-//       backgroundColor: 'black',
-//     },
-//     preview: {
-//       flex: 1,
-//       justifyContent: 'flex-end',
-//       alignItems: 'center',
-//     },
-//     capture: {
-//       flex: 0,
-//       backgroundColor: '#fff',
-//       borderRadius: 5,
-//       padding: 15,
-//       paddingHorizontal: 20,
-//       alignSelf: 'center',
-//       margin: 20,
-//     },
-//     centerText: {
-//         flex: 1,
-//         fontSize: 18,
-//         padding: 32,
-//         color: '#777'
-//       },
-//       textBold: {
-//         fontWeight: '500',
-//         color: '#000'
-//       },
-//       buttonText: {
-//         fontSize: 21,
-//         color: 'rgb(0,122,255)'
-//       },
-//       buttonTouchable: {
-//         padding: 16
-//       }
-//   });
-
-
-  // class  BarcodeScanner extends React.PureComponent {
-
-  //   constructor(props) 
-  //   { 
-  //       super(props); 
-  //       this.camera = null; 
-  //       this.state = { 
-  //           barcodeType: '', 
-  //           barcodeData: '', 
-  //           type: RNCamera.Constants.Type.back,}; 
-  //   }
-
-   
-
-  //   onBarCodeRead(scanResult) { 
-  //       console.log(scanResult.type); 
-  //       console.log(scanResult.data); 
-  //       if (scanResult.data !== null) { 
-  //           this.setState({ barcodeType: scanResult.type, barcodeData: scanResult.data, }); 
-  //       }
-  //       return;
-  //   }
-
-
-  //   // state = {
-  //   //   type: RNCamera.Constants.Type.back,
-  //   // };
-  
-  //   // flipCamera = () =>
-  //   //   this.setState({
-  //   //     type:
-  //   //       this.state.type === RNCamera.Constants.Type.back
-  //   //         ? RNCamera.Constants.Type.front
-  //   //         : RNCamera.Constants.Type.back,
-  //   //   });
-  
-  //   //   onBarCodeRead(scanResult) {
-  //   //     console.warn(scanResult.type);
-  //   //     console.warn(scanResult.data);
-  //   //     // if (scanResult.data != null) {
-  //   //     //     if (!this.barcodeCodes.includes(scanResult.data)) {
-  //   //     //         this.barcodeCodes.push(scanResult.data);
-  //   //     //         console.warn('onBarCodeRead call');
-  //   //     //     }
-  //   //     // }
-  //   //     return;
-  //   // }
-
-
-  //   takePhoto = async () => {
-  //     const { onTakePhoto } = this.props;
-  //     const options = {
-  //       quality: 0.5,
-  //       base64: true,
-  //       width: 300,
-  //       height: 300,
-  //     };
-  //     const data = await this.camera.takePictureAsync(options);
-  //     onTakePhoto(data.base64);
-  //   };
-  //   render() {
-      
-  //     const { type } = this.state;
-      
-
-  //     return (
-  //       <View style={styles.container}>
-  //         <RNCamera
-  //           ref={cam => {
-  //             this.camera = cam;
-  //           }}
-  //           autoFocus={RNCamera.Constants.AutoFocus.on}
-  //           onBarCodeRead = {this.onBarCodeRead.bind(this)}
-  //           type={type}
-  //           style={styles.preview}
-  //         >
-  //           <View
-  //             style={{
-  //               width: 500,
-  //               height: 220,
-  //               backgroundColor: 'rgba(0,0,0,0.5)',
-  //             }}
-  //           />
-    
-  //           <View style={[{flexDirection: 'row'}]}>
-  //             <View
-  //               style={{
-  //                 backgroundColor: 'rgba(0,0,0,0.5)',
-  //                 height: 200,
-  //                 width: 200,
-  //               }}
-  //             />
-  //             <ImageBackground
-  //               // source={require('./assets/qrcode_bg.png')}
-  //               style={{width: 200, height: 200}}>
-  //               <Animated.View
-  //                 style={[styles.border, {transform: [{translateY: moveAnim}]}]}
-  //               />
-  //             </ImageBackground>
-  //             <View
-  //               style={{
-  //                 backgroundColor: 'rgba(0,0,0,0.5)',
-  //                 height: 200,
-  //                 width: 200,
-  //               }}
-  //             />
-  //           </View>
-    
-  //           <View
-  //             style={{
-  //               flex: 1,
-  //               backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  //               width: 500,
-  //               alignItems: 'center',
-  //             }}>
-  //             <Text style={styles.rectangleText}>
-  //                           Put the QR code in the box and it will scan automatically
-  //             </Text>
-  //           </View>
-  //         </RNCamera>
-
-  //           {
-  //               this.state.barcodeData !== "" ? (
-  //                   <>
-  //                       {this.props.navigation.navigate("Stock", {barcodeNo : this.state.barcodeData})}
-  //                   </>
-  //               ) : (
-  //                   <>
-  //                   </>
-  //               )
-  //           }
-
-
-
-
-  //         {/* <View style={styles.topButtons}>
-  //           <TouchableOpacity onPress={this.flipCamera} style={styles.flipButton}>
-  //             <Icon name="refresh" size={35} color="orange" />
-  //           </TouchableOpacity>
-  //         </View>
-  //         <View style={styles.bottomButtons}>
-  //           <TouchableOpacity onPress={this.takePhoto} style={styles.recordingButton}>
-  //             <Icon name="camera" size={50} color="orange" />
-  //           </TouchableOpacity>
-  //         </View> */}
-  //       </View>
-  //     );
-  //   }
-  // }
-  
-  // export default BarcodeScanner;

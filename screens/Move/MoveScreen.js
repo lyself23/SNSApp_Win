@@ -12,7 +12,7 @@ import MoveListBox from './MoveListBox';
 import MoveListHeader from './MoveListHeader';
 import CameraScanner from './CameraScanner'
 
-function AlertDialogComponent() {
+const AlertDialogComponent= () => {
     const [isOpen, setIsOpen] = React.useState(false);
     const onClose = () => setIsOpen(false);
     const cancelRef = React.useRef();
@@ -72,6 +72,7 @@ function MoveScreen ({navigation, route}) {
       const arr = [...lotList];
       arr.splice(index, 1);
       setLotList(arr);
+      console.log(lotList);
   }
 
   React.useEffect(() => {    
@@ -96,14 +97,16 @@ function MoveScreen ({navigation, route}) {
     });
    }, []);
 
-  //route가 변경될 때마다 실행
-  React.useEffect(() => {
-    setScanData(route.params.barcodeNo);
-  }, [route])
+// //route가 변경될 때마다 실행
+// React.useEffect(() => {
+//   // setScanData(route.params.barcodeNo);
+//   console.log('1.', route.params.barcodeNo)
+// }, [route])
 
 React.useEffect(() => {
-    setLotList(lotList.concat(scanData));
-}, [scanData])
+  console.log('2.', route.params.barcodeNo)
+    setLotList(route.params.barcodeNo);
+}, [route])
 
   const getLotData = (e) => {
       if(e.nativeEvent.key === "Enter") {
