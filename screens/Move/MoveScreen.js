@@ -72,7 +72,7 @@ function MoveScreen ({navigation, route}) {
       const arr = [...lotList];
       arr.splice(index, 1);
       setLotList(arr);
-      console.log(lotList);
+      console.log('deleteItem', lotList);
   }
 
   React.useEffect(() => {    
@@ -104,8 +104,8 @@ function MoveScreen ({navigation, route}) {
 // }, [route])
 
 React.useEffect(() => {
-  console.log('2.', route.params.barcodeNo)
-    setLotList(route.params.barcodeNo);
+  console.log('useEffect', route.params.barcodeNo)
+  setLotList(route.params.barcodeNo);
 }, [route])
 
   const getLotData = (e) => {
@@ -150,7 +150,7 @@ React.useEffect(() => {
   };
 
   const onPress = () => {
-    navigation.navigate("BarcodeScanner", {screenName : 'Move', ismultiScan : true, whCode : whOutCode})
+    navigation.navigate("BarcodeScanner", {screenName : 'Move', ismultiScan : true, whCode : whOutCode, list : lotList})
   }
 
     return (

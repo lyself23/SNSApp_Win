@@ -7,7 +7,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const MoveListBox = (props) => {
-    console.log(props);
+    // console.log('리스트박스 props', props);
     const leftSwipe = (progress, dragX) => {
         const scale = dragX.interpolate({
             inputRange : [0, 100],

@@ -17,33 +17,15 @@ import {  useToast, Button } from 'native-base';
 let camera;
 let lotList = [];
 
-function getLotData(cameraData, warehousecode) {
-  if(cameraData === '') {
-      alert('LOTNO를 스캔해주세요');
-  } else {
-    let url = ServerInfo.serverURL + '/api/scanMoveList/';
-    url += LoginInfo.fac_cd + '/';
-    url += cameraData + '/' + warehousecode + '/2/\'\'';
-    
-    axios.get(url)
-    .then( response => {
-        if(response.data.name === 'ERROR') {
-            alert(response.data.message);
-        } else {                        
-          lotList.push(response.data)   
-          console.log('1. lotList', lotList);
-        }          
-    })
-    .catch ( error => {
-      alert("창고에러 : " + error.message);
-    });
-  }
-}
-
 function BarcodeScanner({navigation, route}) {
+  lotList = route.params.list;
+
+  console.log('바코드 lotList', lotList);
+
   const toast = useToast();
   const moveAnim = useRef(new Animated.Value(-2)).current;
 
+  // lotList = route.params.barcode
    useEffect(() => {
     requestCameraPermission();
     startAnimation();
@@ -109,21 +91,18 @@ function BarcodeScanner({navigation, route}) {
               alert(response.data.message);
           } else {       
               const {data} = result;
-              console.log('길이 : ', lotList.length)
+              
               if(lotList.length <= 0) {
                 lotList.push(response.data[0])   
                 toast.show({title: data,  placement: "top",})
-                // console.log('1. lotList', lotList);
               } else {
-                console.log('data : ', data);
                 let arrIndex = lotList.findIndex(ele => ele.mng_no === data)
-                // console.log('arrIndex : ', arrIndex);
+
                 if(arrIndex === -1) {
-                  // console.log('ele.mng_no : ', ele.mng_no)
-                  // console.log('data : ', data)
                   lotList.push(response.data[0])   
                   toast.show({title: data,  placement: "top",})
-                  // console.log('2. lotList', lotList);
+                } else {
+                  toast.show({title: data + '이미 됐습니다',  placement: "top",})
                 }
               }
         }
