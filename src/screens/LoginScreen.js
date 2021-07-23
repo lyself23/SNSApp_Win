@@ -10,7 +10,6 @@ import {
   Alert
 } from 'react-native';
 import axios from 'axios';
-import Main from '../pages/main';
 import LoginInfo from '../common/LoginInfo';
 import ServerInfo from '../common/ServerInfo';
 

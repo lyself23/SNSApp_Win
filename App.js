@@ -1,19 +1,15 @@
 import * as React from 'react';
-import {
-  Text
-} from 'react-native';
 import {  NativeBaseProvider } from 'native-base';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
- import AppNavigator from './navigators/AppNavigator';
+ import AppNavigator from './src/navigators/AppNavigator'
+
 
 function App() {
   return (
     <NavigationContainer>
-      <NativeBaseProvider>
+       <NativeBaseProvider>
         <AppNavigator />
-      </NativeBaseProvider>      
-
+      </NativeBaseProvider> 
     </NavigationContainer>
   );
 }

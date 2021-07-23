@@ -5,10 +5,9 @@ import { NativeBaseProvider, Button, IconButton, Box, HamburgerIcon, Pressable,
 
 import { createDrawerNavigator, DrawerContentScrollView } from '@react-navigation/drawer';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { List } from 'react-native-paper';
 
-import drawerItems from '../common/DrawerMenus';
+import drawerItems from '../data/DrawerMenus'
 import MainNavigator from './MainNavigator';
 import SearchStockNavigator from './SearchStockNavigator';
 import MoveNavigator from './MoveNavigator';
@@ -76,8 +75,7 @@ function AppNavigator() {
     return (
         <Box safeArea flex={1} >
              <Drawer.Navigator
-                drawerContent={(props) => <CustomDrawerContent {...props} />}
-             >
+                drawerContent={(props) => <CustomDrawerContent {...props} />}             >
                     <Drawer.Screen name="MainNavigator" component={MainNavigator} />
                     <Drawer.Screen name="SearchStockNavigator" component={SearchStockNavigator} />
                     <Drawer.Screen name="MoveNavigator" component={MoveNavigator} />
