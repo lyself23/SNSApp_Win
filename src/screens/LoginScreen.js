@@ -1,15 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  Button,
-  TouchableHighlight,
-  Image,
-  Alert
+  StyleSheet,  Text,  View,  TextInput,  TouchableHighlight,  Image
 } from 'react-native';
-import axios from 'axios';
+import fetch from '../service/fetch';
 import LoginInfo from '../common/LoginInfo';
 import ServerInfo from '../common/ServerInfo';
 
@@ -28,34 +21,42 @@ function setLogInInfo(userInfo) {
 }
 
 function LogInScreen({navigation}) {
-    const [userNo, setUserNo] = React.useState('');
-    const [userPassword, setUserPassword] = React.useState('');
-    const [list, setList] = React.useState([null]);
-    const [isLoading, setIsLoading] = React.useState(false);
+  const url = ServerInfo.serverURL + '/api/user/Login/';
+    const [isLoading, setIsLoading] = useState(false);
+    const [userInfo, setUserInfo] = useState({
+      id : '',
+      password : ''
+    })    
 
-    const search = ()=>{
-        if(userNo === "" || userPassword === "") {
+    // 비구조화 할당을 통해 값 추출
+    const { id, password } = userInfo;
+
+    const onChangeText = (name, value) => {
+      setUserInfo({
+        ...userInfo, // 기존의 input 객체를 복사한 뒤
+        [name]: value // name 키를 가진 값을 value 로 설정
+      });
+    };
+
+    const search = () => {
+        if(id === "" || password === "") {
              alert("사원번호나 비밀번호를 입력해주세요");
         } else {
-
-            let url = ServerInfo.serverURL + '/api/users/login/';
-            url += userNo + '/';
-            url += userPassword;
-
             setIsLoading( true );
-            console.log(url);
 
-            axios.get( url )
-            .then( response => {
+             fetch(url, userInfo)
+              .then( data => {   
                 setIsLoading( false );
-                if(response.data.length === 0) {
-                    alert("사원번호나 비밀번호를 다시 확인해주세요");
+                if(data.length === 0) {
+                  alert("사원번호나 비밀번호를 다시 확인해주세요");
                 } else {
-                    setLogInInfo(response.data[0]);
-                    navigation.navigate("Main");
+                  setLogInInfo(data[0]);
+                  navigation.navigate("Main");
                 }
-            } )
-            .catch( error => alert( error.message ) );
+              })
+              .catch ( error => {
+                alert("창고에러 : " + error.message);
+              });
         }
     };
     return (      
@@ -64,11 +65,12 @@ function LogInScreen({navigation}) {
             <Image style={styles.inputIcon} source={{uri: 'https://png.icons8.com/message/ultraviolet/50/3498db'}}/>
             <TextInput 
                 style={styles.inputs}
-                value={ userNo }
+                value={ id }
                 placeholder="사번"
                 keyboardType="number-pad"
                 underlineColorAndroid='transparent'
-                onChangeText={(value) => setUserNo(value)}/>
+                onChangeText={(value) => onChangeText("id", value)}
+            />
           </View>
       
           <View style={styles.inputContainer}>
@@ -77,7 +79,9 @@ function LogInScreen({navigation}) {
                 placeholder="비밀번호"
                 secureTextEntry={true}
                 underlineColorAndroid='transparent'
-                onChangeText={(userPassword) => setUserPassword(userPassword)}/>
+                value = {password}
+                onChangeText={(value) => onChangeText("password", value)}
+            />
           </View>
 
           <TouchableHighlight 

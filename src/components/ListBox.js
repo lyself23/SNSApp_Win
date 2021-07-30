@@ -14,7 +14,7 @@ function ListBox(props) {
                 <VStack>
                     <HStack>
                         <Box borderLeftRadius = {5} bg = "#e0f2fe" w = "20%" alignItems = "center" justifyContent = "center">품명</Box>
-                        <Box flex = {1} pl = {2}  justifyContent = "center">{props.data.item.itm_nm}</Box>                                                 
+                        <Box flex = {1} pl = {2}  justifyContent = "center"><Text>{props.data.item.itm_nm}</Text></Box>                                                 
                     </HStack>
                     <HStack>
                         <Box bg = "#e0f2fe" w = "20%" alignItems = "center" justifyContent = "center">규격</Box>
@@ -28,7 +28,7 @@ function ListBox(props) {
                         <Box borderLeftRadius = {5} bg = "#e0f2fe" w = "20%" alignItems = "center" justifyContent = "center">LOTNO</Box>
                         <Box flex = {1} pl = {2} ><Text>{props.data.item.mng_no} (박스순번 : {props.data.item.box_sq}) </Text></Box>  
                     </HStack>
-                </VStack>
+                </VStack>              
             </Box>
         </Center>
     );

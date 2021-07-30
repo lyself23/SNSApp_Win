@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
- import { SafeAreaView, View, StyleSheet, StatusBar, Modal } from 'react-native';
-import {  VStack,  Center,   useColorModeValue,  Button, FlatList,  AlertDialog, HStack} from 'native-base';
+import {Spinner, VStack,  Center,   useColorModeValue,  Button, FlatList,  AlertDialog} from 'native-base';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import fetch from '../service/fetch';
 import getFormatDate from '../service/GetFormatDate';
@@ -51,28 +50,61 @@ const AlertDialogComponent= () => {
         </Button>
       </Center>
     );
-  }
+}
 
 function MoveScreen ({navigation, route}) {
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [showCalander, setShowCalander] = useState(false);
-
-  const [textDate, setTextDate] = useState(
-    getFormatDate(date, "yyyy-MM-dd")
-  );
-
-  const [textLotNo, setTextLotNo] = useState('');
-
-  const [wareHouseInList, setWareHouseInList] = useState([]); 
-  const [whInCode, setWhInCode] = useState('');
-  const [wareHouseOutList, setWareHouseOutList] = useState([]); 
-  const [whOutCode, setWhOutCode] = useState('');
+  const [showScanner, setShowScanner] = useState(false); 
 
   const [lotList, setLotList] = useState([]);
-  const [barcodeInfo, setBarcodeInfo] = useState([]);
-  const [isLoading, setIsLoading] = useState(false); 
-  const [showModal, setShowModal] = useState(false)
+  const [barcodeInfo, setBarcodeInfo] = useState([]); 
+  const [outWarehouseList, setOutWarehouseList] = useState({})
+  const [inWarehouseList, setInWarehouseList] = useState({})
+
+  const [isLoading, setIsloading] = useState(false);
+
+  const [inputs, setInputs] = useState({
+    inputDate : getFormatDate(date, "yyyy-MM"),
+    inputOutWarehouse : "",
+    inputInWarehouse : "",
+    inputLotNo : "",
+    inputWarehouseList : {}
+  })  
+
+  const warehouseApiParams = {
+    outWarehouse : {
+      factoryCode : LoginInfo.fac_cd,
+      warehouseCode : "",
+      flag : "5",
+      regID : LoginInfo.regID
+    },
+    inWarehouse : {
+      factoryCode : LoginInfo.fac_cd,
+      warehouseCode : "",
+      flag : "1",
+      regID : LoginInfo.regID
+    }}
+
+    const [searchApiParams, setSearchApiParams] = useState({
+        standardDate : "",
+        factoryCode : LoginInfo.fac_cd,
+        warehouseCode : "",
+        lotNo : "",      
+    })
+
+
+  const [saveApiParams, setSaveApiParams] = useState({    
+    master : {
+        standardDate : "",
+        outFactoryCode : LoginInfo.fac_cd,
+        inFactoryCode : LoginInfo.fac_cd,
+        outWarehouseCode : "",
+        inWarehouseCode : "",
+      },
+    detail : []
+  })
 
   const deleteItem = index => {
       const arr = [...lotList];
@@ -80,102 +112,74 @@ function MoveScreen ({navigation, route}) {
       setLotList(arr);
   }
 
-  useEffect(() => {    
-    let url = ServerInfo.serverURL + '/api/getWarehouseList/';
-    url += LoginInfo.fac_cd + '/\'\'/5';
+  //비구조화 할당을 통해 값 추출
+  //기본 : 변경 => 기본을 변경으로 바꿔서 사용하겠다란 의미
+  const {master : insertMaster, detail : insertDetail} = saveApiParams;
+  const {
+    outWarehouse : outWarehouseAPIParam,
+    inWarehouse : inWarehouseAPIParam
+  } = warehouseApiParams;
+  const {inputDate, inputOutWarehouse, inputInWarehouse, inputLotNo} = inputs;
+ 
+  useEffect(() => {
+    const url = ServerInfo.serverURL + '/api/warehouse/getWarehouseList';
+    fetch(url, outWarehouseAPIParam)
+      .then( data => {setOutWarehouseList(data)})
+      .catch ( error => {alert("창고에러 : " + error.message);});
 
-    fetch(url)
-      .then( data => {   
-        setWareHouseOutList(data);
-      })
-      .catch ( error => {
-        alert("창고에러 : " + error.message);
-      });
-    
-    fetch(url)
-      .then( data => {   
-        setWareHouseInList(data);
-      })
-      .catch ( error => {
-        alert("창고에러 : " + error.message);
-      });
-   }, []);
-
-  const showCameraScanner = () => {
-    setShowModal(true);
-  }  
-
-  const onBarCodeRead = (value) => {  
-    if (whOutCode === '') {
-      alert('출고창고를 선택해주세요');
-    } else if (textDate === '') {
-      alert('이동일자를 선택해주세요');
-    } else {
-      if(value.data !== null) {
-        let url = ServerInfo.serverURL + '/api/scanMoveList/';
-            url += LoginInfo.fac_cd + '/';
-            url += value.data + '/' + whOutCode + '/2/' + textDate;
-
-        fetch(url)
-          .then( data => {   
-            setBarcodeInfo(data);
-          })
-          .catch ( error => {
-            alert("창고에러 : " + error.message);
-          });
-      }
-    }
-  }  
-
-  const search = (e) => {
-    if(e.nativeEvent.key === "Enter") {
-      if(textLotNo === '') {
-        alert('LOTNO를 스캔해주세요');
-      } else if (whOutCode === '') {
-        alert('출고창고를 선택해주세요');
-      } else if (textDate === '') {
-        alert('이동일자를 선택해주세요');
-      } else {
-        let url = ServerInfo.serverURL + '/api/scanMoveList/';
-            url += LoginInfo.fac_cd + '/';
-            url += textLotNo + '/' + whOutCode + '/2/\'\'';
-
-        fetch(url)
-          .then( data => {   
-            if(data.length === 0) {
-              alert("조회된 내용이 없습니다");
-            } else {
-              setBarcodeInfo(data);
-              setTextLotNo('');
-            }        
-          })
-          .catch ( error => {
-            alert("창고에러 : " + error.message);
-          });
-      }
-    }
-  }
+    fetch(url, inWarehouseAPIParam)
+      .then( data => {setInWarehouseList(data)})
+      .catch ( error => {alert("창고에러 : " + error.message);});
+  }, []) 
 
   useEffect (() => {
-    if(barcodeInfo.length > 0) {  
-      if (lotList.length > 0) {
-        var index = lotList.findIndex(item => item.mng_no === barcodeInfo[0].mng_no);
+    setSearchApiParams({
+      ...searchApiParams,
+      standardDate : inputDate,
+      warehouseCode : inputOutWarehouse,
+      lotNo : inputLotNo.trim()
+    })
+  }, [inputDate, inputOutWarehouse, inputLotNo])
 
-        if(index < 0) {
-          setLotList(lotList => lotList.concat(barcodeInfo));          
-        }
-      } else {
-        setLotList(barcodeInfo);
-      }
+  //바코드 내역 변경될 때 실행
+  useEffect (() => {
+    if(barcodeInfo.length > 0) { 
+      setLotList(barcodeInfo);
     }    
-  }, [barcodeInfo])
+  }, [barcodeInfo]) 
+
+  //검색할 때만 API 정보 가져옴
+  useEffect (() => {
+    let url = ServerInfo.serverURL + '/api/product/getStockList';     
+
+    if (isLoading) {
+      // console.log('searchAPIParam', searchApiParams)
+      fetch(url, searchApiParams)            
+      .then( data => { 
+        setBarcodeInfo(data);
+        setInputs({...inputs, inputLotNo : ""})
+        setIsloading(false);
+      })
+      .catch ( error => {
+        alert("창고에러 : " + error.message);
+         setIsloading(false);  
+      }); 
+    }    
+  }, [isLoading])
 
   const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShowCalander(Platform.OS === 'ios');
     setDate(currentDate);
-    setTextDate(getFormatDate(currentDate, "yyyy-MM"))
+    onChangeInputs("inputDate", getFormatDate(currentDate, "yyyy-MM"))
   };
+
+  const onChangeInputs = (name, value) => {
+    setInputs({
+      ...inputs,
+      [name] : value
+    })    
+  }
 
   const showMode = (currentMode) => {
     setShowCalander(true);
@@ -185,6 +189,52 @@ function MoveScreen ({navigation, route}) {
   const showDatepicker = () => {
     showMode('date');
   };  
+  
+  const showCameraScanner = () => {
+    setShowScanner(true);
+  }
+
+  const onBarCodeRead = (value) => {  
+    if(value.data !== null) {
+      console.log('value.data', value.data);
+      setIsloading(true);
+    }
+  }
+
+  const getBarcodeInfo = (name, event) => {
+    const lotNo = (name === "inputLotNo") ? event : event.data;
+
+    if (inputOutWarehouse === '') {
+      alert('출고창고를 선택해주세요');
+    } else if (inputDate === '') {
+      alert('조회일자를 선택해주세요');
+    } else if (name === 'inputLotNo' && lotNo === '') {
+      alert('LOTNO를 스캔해주세요');
+    } 
+
+    if ((name === 'inputLotNo' && event.nativeEvent.key === "Enter") ||
+        (name === 'scanner' && lotNo !== null)) {
+          setIsloading(true);
+    }
+  }
+
+  const onPress = (() => {
+    setSaveApiParams({
+       master : {
+        ...insertMaster,
+        standardDate : inputDate,
+        outWarehouseCode : inputOutWarehouse,
+        inWarehouseCode : inputInWarehouse,
+      },
+      detail : insertDetail.concat(lotList)          
+    }) 
+  })
+
+  useEffect(() => {
+    console.log('insertMaster : ', insertMaster);
+    console.log('insertDetail : ', insertDetail);
+
+  }, [saveApiParams])
 
   return (
       <>
@@ -204,43 +254,54 @@ function MoveScreen ({navigation, route}) {
                   />
                 )}
 
+              <CameraScanner 
+                isOpen = {showScanner} 
+                onClose = { () => setShowScanner(false) } 
+                onBarCodeRead = {value => onBarCodeRead(value)}            
+              />
+
                 <InputIcon 
                   name = "calendar" 
                   formSize = "sm" 
                   labelName = "이동일" 
-                  value = {textDate} 
+                  value = {inputDate} 
                   isReadOnly = {true} 
                   iconName = "calendar-today" 
                   onIconPress = {showDatepicker} 
-                  onChangeText = {(value) => setTextDate(value)}
+                  onChangeText = {(value) => onChangeInputs("inputDate", value)}
                 />
-
                
-                  <SelectBox size = "sm" labelName = "출고창고" data = {wareHouseOutList} onValueChange = {setWhOutCode}/>             
-                  <SelectBox size = "sm" labelName = "입고창고" data = {wareHouseInList} onValueChange = {setWhInCode}/>
-             
-                  
+                <SelectBox 
+                  size = "sm" 
+                  labelName = "출고창고" 
+                  data = {outWarehouseList} 
+                  onValueChange = {(value) => onChangeInputs("inputOutWarehouse", value)}
+                />     
+
+                <SelectBox 
+                  size = "sm" 
+                  labelName = "입고창고" 
+                  data = {inWarehouseList} 
+                  onValueChange = {(value) => onChangeInputs("inputInWarehouse", value)}
+                />   
                 
                 <InputIcon 
                   name = "lotNo" 
                   fontSize = "sm" 
                   labelName = "LOTNO" 
-                  value = {textLotNo} 
+                  value = {inputLotNo} 
                   isReadOnly = {false} 
                   iconSize = "md" 
                   iconName = "camera-alt"                       
-                  onChangeText = {(value) => setTextLotNo(value)} 
+                  onChangeText = {(value) => onChangeInputs("inputLotNo", value)}
                   onIconPress = {showCameraScanner}  
-                  onKeyPress = {search}
+                  onKeyPress = {(value) => getBarcodeInfo("inputLotNo", value)}
                   returnKeyType = 'none'
-                />  
-                <CameraScanner isOpen = {showModal} onClose = { () => setShowModal(false) } onBarCodeRead = {onBarCodeRead}/>                  
+                />                            
               </VStack>                
           </Center>
           
-          {/* <Box border = {1} borderColor = 'gray.300'/> */}
-
-          
+          {/* <Box border = {1} borderColor = 'gray.300'/> */}          
 
           {/* <Box mt = {3} 
                 p = {2} 
@@ -256,7 +317,26 @@ function MoveScreen ({navigation, route}) {
 
           <GroupTitle name = '검색결과' />
 
-          <FlatList 
+          {isLoading ?
+          <Center space={3}><Spinner size="lg" /></Center>
+          :
+            <FlatList 
+              flex = {1} bg={useColorModeValue("gray.50", "gray.700")}
+              data = {lotList}
+              renderItem = {(item, index) => {return <InputSwipeListBox data = {item} handleDelete = {() => deleteItem(index)} />; }}
+              keyExtractor = {(item, index) => index.toString()}
+            />
+          }
+
+          <Button  m = {1} onPress = {onPress}>등록</Button>
+
+          {/* {lotList.length > 0 ?
+          <Button isLoading  m = {1}></Button>
+          :
+          <Button  m = {1} >등록</Button>
+          } */}
+
+          {/* <FlatList 
             flex = {1} bg={useColorModeValue("gray.50", "gray.700")}
             data = {lotList}
             renderItem = {(item, index) => {return <InputSwipeListBox data = {item} handleDelete = {() => deleteItem(index)} />; }}
@@ -271,7 +351,7 @@ function MoveScreen ({navigation, route}) {
               >
                   등록
                   </Button>
-          )}       
+          )}        */}
       </>      
   )
 };
