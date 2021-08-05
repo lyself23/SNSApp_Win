@@ -29,6 +29,7 @@
     "react-native-collapsible": "^1.6.0",
     "react-native-data-table": "^0.2.1",
     "react-native-gesture-handler": "^1.10.3",
+    "react-native-keyboard-aware-scroll-view": "^0.9.4",
     "react-native-paper": "^4.9.2",
     "react-native-permissions": "^2.2.2",
     "react-native-qrcode-scanner": "^1.5.4",

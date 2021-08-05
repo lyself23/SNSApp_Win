@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { Spinner, VStack, Center, useColorModeValue, FlatList} from 'native-base';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import fetch from '../service/fetch';
+import {fetch} from '../service/fetch';
 import LoginInfo from '../common/LoginInfo';
 import ServerInfo from '../common/ServerInfo';
 import {ListBox} from '../components/ListBox';

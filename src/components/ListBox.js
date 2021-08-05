@@ -78,8 +78,8 @@ function InputSwipeListBox(props) {
                             </VStack>
                             <VStack justifyContent = 'center'>
                                 <Center border = {1} borderColor = '#31A1F5' borderBottomWidth={0} borderTopWidth = {0} borderLeftWidth = {1} borderRightWidth = {0}>
-                                       <Input placeholder="이동수량" size="xs" keyboardType = 'numeric'></Input>
-                                    <Box><Text>재고 {props.data.item.rest_qty} EA</Text></Box>
+                                    <Input id = {props.data.index} placeholder="이동수량" size="xs" keyboardType = 'numeric' onChangeText = {props.onChangeText}></Input>
+                                    <Box><Text>재고 {props.data.item.stock_qty} EA</Text></Box>
                                 </Center>
                             </VStack>
                         </HStack>

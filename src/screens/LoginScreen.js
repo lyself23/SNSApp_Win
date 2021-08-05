@@ -2,13 +2,14 @@ import React, {useState} from 'react';
 import {
   StyleSheet,  Text,  View,  TextInput,  TouchableHighlight,  Image
 } from 'react-native';
-import fetch from '../service/fetch';
+import {fetch} from '../service/fetch';
 import LoginInfo from '../common/LoginInfo';
 import ServerInfo from '../common/ServerInfo';
 
 
 //로그인 정보 저장
 function setLogInInfo(userInfo) {
+  console.log(userInfo);
   LoginInfo.reg_id = userInfo.reg_id,
   LoginInfo.emp_no = userInfo.emp_no,
   LoginInfo.emp_nm = userInfo.emp_nm,
