@@ -237,13 +237,20 @@ function MoveScreen ({navigation, route}) {
     }
   }
 
-  const onPress = (() => {
-    const saveList = [];
+  const onPress = (async() => {
+    const urlParams = {
+      tableNm : 'LEM100',
+      work_dt : inputDate
+    }
+    let url = ServerInfo.serverURL + '/api/code';   
+    let codeNo = await fetch(url, urlParams).then(data => codeNo = data[0].codeNo);
+    
+    const saveList = [];    
     lotList.map(value => {
       saveList.push({
         out_fac : LoginInfo.fac_cd,
         in_fac : LoginInfo.fac_cd,
-        mov_no : "",
+        mov_no : codeNo,
         out_dt : inputDate,
         out_wh : inputOutWarehouse,
         in_wh : inputInWarehouse,
@@ -258,11 +265,12 @@ function MoveScreen ({navigation, route}) {
         reg_id : LoginInfo.reg_id
       });
     })
-  setSaveApiParams(saveList);
+    setSaveApiParams(saveList);
   })
 
   useEffect(() => {
     const url = ServerInfo.serverURL + '/api/product/workMoveProduct';
+    console.log('saveApiParams : ', saveApiParams)
     fetchPost(url, saveApiParams)
       .then( setLotList([]))
       .catch ( error => {alert("등록에러 : " + error.message);});
