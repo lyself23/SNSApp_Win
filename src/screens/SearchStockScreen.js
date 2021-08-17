@@ -68,11 +68,10 @@ function SearchStockScreen({navigation, route}) {
 
   //standardDate, lotNo, date 바뀌면 api 값도 변경됨
   useEffect(() => {
-    setApiParams({
-      //기존값은 그대로두고
-      ...apiParams, 
+    setApiParams({      
+      ...apiParams,  //기존값은 그대로두고
       search : {
-        ...searchAPIParam,
+        ...searchAPIParam, //기존값은 그대로두고
         standardDate : inputDate,
         warehouseCode : inputWarehouse,
         lotNo : inputLotNo,
@@ -92,9 +91,6 @@ function SearchStockScreen({navigation, route}) {
     let url = ServerInfo.serverURL + '/api/product/getStockList';     
 
     if (isLoading) {
-      console.log('apiParams.search.lotNo', apiParams.search.lotNo);
-      console.log('inputLotNo', inputLotNo);
-      console.log('searchAPIParam', searchAPIParam)
       fetch(url, searchAPIParam)            
       .then( data => { 
         setBarcodeInfo(data);
@@ -145,11 +141,10 @@ function SearchStockScreen({navigation, route}) {
       // })
 
       //왜인진 모르겠지만 여기서 바로 넣어줘야 lotNo에 적용됨
-      setApiParams({
-        //기존값은 그대로두고
-        ...apiParams, 
+      setApiParams({       
+        ...apiParams,  //기존값은 그대로두고
         search : {
-          ...searchAPIParam,
+          ...searchAPIParam, //기존값은 그대로두고
           lotNo : value.data,
         }
       })   

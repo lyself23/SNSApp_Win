@@ -1,8 +1,9 @@
 import React from 'react';
-import {View, Text, StyleSheet, Dimensions, Animated, TouchableOpacity} from 'react-native';
-import { Center, Box, Icon, Input, VStack, HStack, useColorModeValue } from "native-base"
+import {View, StyleSheet, Dimensions, Animated, TouchableOpacity} from 'react-native';
+import { Center, Box, Icon, Text, VStack, HStack, useColorModeValue } from "native-base"
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import NumericInput from 'react-native-numeric-input'
 
  const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -52,40 +53,37 @@ function InputSwipeListBox(props) {
         )
     }
 
+    const listHeader = {fontSize: "sm", }
+
     return (            
         <Swipeable
             renderLeftActions = {leftSwipe}>
-                <Center flex = {1}>
-                    <Box w = "95%" m = {3} border = {1} borderColor = '#31A1F5' bg={useColorModeValue("gray.50", "gray.700")} rounded = {5}>
-                        <HStack>
-                            <VStack flex = {0.9}>
-                                <HStack>
-                                    <Box borderLeftRadius = {5} bg = "#f2faff" w = "20%" alignItems = "center" justifyContent = "center"><Text>품명</Text></Box>
-                                    <Box flex = {1} pl = {2} justifyContent = "center"><Text>{props.data.item.itm_nm}</Text></Box>                                                 
-                                </HStack>
-                                <HStack>
-                                    <Box bg = "#f2faff" w = "20%" alignItems = "center" justifyContent = "center"><Text>규격</Text></Box>
-                                    <Box flex = {1} pl = {2} justifyContent = "center"><Text>{props.data.item.spec}</Text></Box>                       
-                                </HStack>
-                                <HStack>
-                                    <Box bg = "#f2faff" w = "20%" alignItems = "center" justifyContent = "center"><Text>품번</Text></Box>
-                                    <Box flex = {1} pl = {2} justifyContent = "center"><Text>{props.data.item.itm_cd}</Text></Box>                       
-                                </HStack>
-                                <HStack>
-                                    <Box borderLeftRadius = {5} bg = "#f2faff" w = "20%" alignItems = "center" justifyContent = "center"><Text>LOTNO</Text></Box>
-                                    <Box flex = {1} pl = {2}><Text>{props.data.item.mng_no} (순번 : {props.data.item.box_sq})</Text></Box>  
-                                </HStack>
-                            </VStack>
-                            <VStack justifyContent = 'center'>
-                                <Center border = {1} borderColor = '#31A1F5' borderBottomWidth={0} borderTopWidth = {0} borderLeftWidth = {1} borderRightWidth = {0}>
-                                    <Input id = {props.data.index} placeholder="이동수량" size="xs" keyboardType = 'numeric' onChangeText = {props.onChangeText}></Input>
-                                    <Box><Text>재고 {props.data.item.stock_qty} EA</Text></Box>
-                                </Center>
-                            </VStack>
-                        </HStack>
-                    </Box>
-                </Center>
-            
+               <Box w = "95%" m = {3} border = {1} borderColor = '#31A1F5' bg={useColorModeValue("gray.50", "gray.700")} rounded = {5}>
+                    <HStack>
+                        <VStack>
+                            <HStack>
+                            <Box  _text={listHeader} bg = "#f2faff" w = "25%" alignItems = "center" borderLeftRadius = {5} p = {0.5}>LOTNO</Box>
+                                <Text p = {0.5} fontSize = "sm">{props.data.item.mng_no} (순번 : {props.data.item.box_sq})</Text> 
+                            </HStack>
+                            <HStack>
+                                <Box  _text={listHeader} bg = "#f2faff" w = "25%" alignItems = "center" borderLeftRadius = {5} p = {0.5}>품명</Box>
+                                <Text p = {0.5} fontSize = "sm">{props.data.item.itm_nm}</Text> 
+                            </HStack>
+                            <HStack>
+                                <Box  _text={listHeader} bg = "#f2faff" w = "25%" alignItems = "center" borderLeftRadius = {5} p = {0.5}>규격</Box>
+                                <Text p = {0.5} fontSize = "sm">{props.data.item.spec}</Text> 
+                            </HStack>
+                            <HStack>
+                                <Box  _text={listHeader} bg = "#f2faff" w = "25%" alignItems = "center" borderLeftRadius = {5} p = {0.5}>품번</Box>
+                                <Text p = {0.5} fontSize = "sm">{props.data.item.itm_cd}</Text> 
+                            </HStack>
+                        </VStack>
+                        <VStack justifyContent = "center" alignItems = "flex-end" >
+                            <NumericInput  rounded onChange = {props.onChangeText} minValue = {0} maxValue = {props.data.item.stock_qty} totalWidth = {100} totalHeight = {35} iconSize = {40}/>
+                            <Text style = {styles.fontStock} mr = {1}>재고 {props.data.item.stock_qty} EA</Text>
+                        </VStack>
+                    </HStack>
+                </Box>
         </Swipeable>
     );
 
@@ -94,6 +92,13 @@ function InputSwipeListBox(props) {
 export {ListBox, InputSwipeListBox};
 
 const styles = StyleSheet.create({
+    listContainer : {
+        backgroundColor : 'red',
+        margin : 5,
+        justifyContent : 'center',
+        alignItems : 'center',
+        width : '95%',     
+    },
     container : {
         height : 80,
         width : SCREEN_WIDTH,
@@ -110,7 +115,19 @@ const styles = StyleSheet.create({
         justifyContent : 'center',
         alignItems : 'center',
         width : 90,
-        height : 133,
+        height : 78,
         marginTop : 13
+    },
+    listHeader : {
+        backgroundColor : "#f2faff",
+        width : "20%",
+        alignItems : "center",
+        justifyContent : "center"
+    },
+    fontStock : {
+        marginTop : 10,
+        fontSize : 13,
+        justifyContent : 'flex-end',
+        alignItems : 'flex-end'
     }
 })

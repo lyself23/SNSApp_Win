@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
 import { NativeBaseProvider, Button, IconButton, Box, HamburgerIcon, Pressable,
-    Heading, VStack, Text, Center, HStack, Divider, Icon } from 'native-base';
+    Heading, VStack, Text, Center, HStack, Divider, Icon, Stack } from 'native-base';
 
 import { createDrawerNavigator, DrawerContentScrollView } from '@react-navigation/drawer';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -31,8 +31,8 @@ function Component(props) {
   }
   function CustomDrawerContent(props) {   
     return (
-      <DrawerContentScrollView  backgroundColor = 'white' {...props} safeArea>      
-        <VStack  divider={<Divider />} px={4} bg={mainBackColor}>
+      <DrawerContentScrollView contentContainerStyle={{ paddingTop: 0 }} {...props}>     
+        <Stack  divider={<Divider />} px={4} bg={mainBackColor}>
           <VStack py = {3}>
             <Text bold fontSize={20} color = 'white' mt = {2} mb = {4}>S&S INC</Text>
             <Text bold color="white">{LoginInfo.emp_nm} ( {LoginInfo.emp_no} )</Text>
@@ -48,7 +48,7 @@ function Component(props) {
                 </HStack>
               </Pressable> 
           </VStack> 
-        </VStack>
+        </Stack>
 
         <VStack divider={<Divider />} space={4} bg = 'white'>
           <VStack>

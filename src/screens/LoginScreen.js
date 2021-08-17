@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
-import {
-  StyleSheet,  Text,  View,  TextInput,  TouchableHighlight,  Image
-} from 'react-native';
+import {StyleSheet, View} from 'react-native';
+import {Box, VStack, Input, Button, Icon, Image} from 'native-base'
 import {fetch} from '../service/fetch';
 import LoginInfo from '../common/LoginInfo';
 import ServerInfo from '../common/ServerInfo';
-
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import NumericInput from 'react-native-numeric-input'
 
 //로그인 정보 저장
 function setLogInInfo(userInfo) {
@@ -60,47 +60,50 @@ function LogInScreen({navigation}) {
               });
         }
     };
-    return (      
-        <View style={styles.container}>            
-          <View style={styles.inputContainer}>
-            <Image style={styles.inputIcon} source={{uri: 'https://png.icons8.com/message/ultraviolet/50/3498db'}}/>
-            <TextInput 
-                style={styles.inputs}
-                value={ id }
-                placeholder="사번"
-                keyboardType="number-pad"
-                underlineColorAndroid='transparent'
-                onChangeText={(value) => onChangeText("id", value)}
+    return (    
+      <View style={styles.container}> 
+        <Image
+          style = {{flex : 1}}
+          size={180}
+          resizeMode={"contain"}
+        //  borderRadius={100}
+          source={{uri: "http://snsinc.co.kr/images/common/logo.png",}}
+          alt="Alternate Text"
+        />
+
+          <VStack w = "70%" style = {{flex : 2}}>
+            <Input 
+              m = {2}
+              variant="underlined"
+              placeholder="사번"
+              keyboardType="number-pad"
+              value={ id }
+              onChangeText={(value) => onChangeText("id", value)}
+              _light={{placeholderTextColor: "blueGray.400",}}
+              _dark={{placeholderTextColor: "blueGray.50",}}
+              InputLeftElement={<Icon size="md" mr = {3}
+                                color="gray.400" 
+                                as={<FontAwesome name="user"/>} 
+                                />}
             />
-          </View>
-      
-          <View style={styles.inputContainer}>
-            <Image style={styles.inputIcon} source={{uri: 'https://png.icons8.com/key-2/ultraviolet/50/3498db'}}/>
-            <TextInput style={styles.inputs}
-                placeholder="비밀번호"
-                secureTextEntry={true}
-                underlineColorAndroid='transparent'
-                value = {password}
-                onChangeText={(value) => onChangeText("password", value)}
+            <Input 
+              m = {2}
+              variant="underlined"
+              placeholder="비밀번호"
+              secureTextEntry={true}
+              value = {password}
+              onChangeText={(value) => onChangeText("password", value)}
+              _light={{placeholderTextColor: "blueGray.400",}}
+              _dark={{placeholderTextColor: "blueGray.50",}}
+              InputLeftElement={<Icon size="md" mr = {3}
+                                color="gray.400" 
+                                as={<FontAwesome name="lock"/>} 
+                                />}
             />
-          </View>
+          <Button mt = {10} onPress={search}>로그인</Button> 
+        </VStack>
+      </View>  
 
-          <TouchableHighlight 
-              name = "login" 
-              style={[styles.buttonContainer, styles.loginButton]}
-               onPress={search}
-          >
-              <Text style={styles.loginText}>Login</Text>
-          </TouchableHighlight>
-
-          {/* <TouchableHighlight style={styles.buttonContainer} onPress={() => this.onClickListener('restore_password')}>
-              <Text>Forgot your password?</Text>
-          </TouchableHighlight>  */}
-
-          {/* <TouchableHighlight style={styles.buttonContainer} onPress={() => this.onClickListener('register')}>
-              <Text>Register</Text>
-          </TouchableHighlight> */}
-      </View>
   );
 }
 
@@ -111,44 +114,6 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#DCDCDC',
+      backgroundColor: 'white',
     },
-    inputContainer: {
-        borderBottomColor: '#F5FCFF',
-        backgroundColor: '#FFFFFF',
-        borderRadius:30,
-        borderBottomWidth: 1,
-        width:250,
-        height:45,
-        marginBottom:20,
-        flexDirection: 'row',
-        alignItems:'center'
-    },
-    inputs:{
-        height:45,
-        marginLeft:16,
-        borderBottomColor: '#FFFFFF',
-        flex:1,
-    },
-    inputIcon:{
-      width:30,
-      height:30,
-      marginLeft:15,
-      justifyContent: 'center'
-    },
-    buttonContainer: {
-      height:45,
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginBottom:20,
-      width:250,
-      borderRadius:30,
-    },
-    loginButton: {
-      backgroundColor: "#00b5ec",
-    },
-    loginText: {
-      color: 'white',
-    }
   });

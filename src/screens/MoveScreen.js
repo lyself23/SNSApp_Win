@@ -12,16 +12,13 @@ import {InputIcon} from '../components/Input';
 import ScreenHeader from '../components/ScreenHeader';
 import GroupTitle from '../components/GroupTitle';
 import CameraScanner from '../components/CameraScanner';
-import { ControlledPropUpdatedSelectedItem } from 'native-base/lib/typescript/components/composites/Typeahead/useTypeahead/types';
-import { update } from 'lodash';
-import { createIconSetFromFontello } from 'react-native-vector-icons';
+
 
 const AlertDialogComponent= () => {
     const [isOpen, setIsOpen] = useState(false);
     const onClose = () => setIsOpen(false);
     const cancelRef = useRef();
     const onDelete = () => {      
-            alert('test');
             setIsOpen(false);        
     }
     return (
@@ -57,6 +54,7 @@ const AlertDialogComponent= () => {
 }
 
 function MoveScreen ({navigation, route}) {
+  //달력관련 Hook
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [showCalander, setShowCalander] = useState(false);
@@ -69,6 +67,7 @@ function MoveScreen ({navigation, route}) {
 
   const [isLoading, setIsloading] = useState(false);
 
+  //입력값 관련 Hook
   const [inputs, setInputs] = useState({
     inputDate : getFormatDate(date, "yyyy-MM-dd"),
     inputOutWarehouse : "",
@@ -76,8 +75,6 @@ function MoveScreen ({navigation, route}) {
     inputLotNo : "",
     inputWarehouseList : {}
   })  
-
-  // const [inputQty, setInputQty] = useState();
 
   const warehouseApiParams = {
     outWarehouse : {
@@ -100,20 +97,7 @@ function MoveScreen ({navigation, route}) {
         lotNo : "",      
     })
 
-
-  // const [saveApiParams, setSaveApiParams] = useState({    
-  //   master : {
-  //       standardDate : "",
-  //       outFactoryCode : LoginInfo.fac_cd,
-  //       inFactoryCode : LoginInfo.fac_cd,
-  //       outWarehouseCode : "",
-  //       inWarehouseCode : "",
-  //     },
-  //   detail : []
-  // })
-
   const [saveApiParams, setSaveApiParams] = useState([{}])
-
 
   const deleteItem = index => {
       const arr = [...lotList];
@@ -144,6 +128,7 @@ function MoveScreen ({navigation, route}) {
  
   useEffect(() => {
     const url = ServerInfo.serverURL + '/api/warehouse/getWarehouseList';
+  
     fetch(url, outWarehouseAPIParam)
       .then( data => {setOutWarehouseList(data)})
       .catch ( error => {alert("창고에러 : " + error.message);});
@@ -151,6 +136,8 @@ function MoveScreen ({navigation, route}) {
     fetch(url, inWarehouseAPIParam)
       .then( data => {setInWarehouseList(data)})
       .catch ( error => {alert("창고에러 : " + error.message);});
+
+      
   }, []) 
 
   useEffect (() => {
@@ -169,6 +156,8 @@ function MoveScreen ({navigation, route}) {
     }    
   }, [barcodeInfo]) 
 
+
+
   //검색할 때만 API 정보 가져옴
   useEffect (() => {
     let url = ServerInfo.serverURL + '/api/product/getStockList';     
@@ -176,13 +165,17 @@ function MoveScreen ({navigation, route}) {
     if (isLoading) {
       fetch(url, searchApiParams)            
       .then( data => { 
+        if (data[0] === undefined) {
+         alert("조회내역이 없습니다");
+         setIsloading(false);  
+        }        
         setBarcodeInfo(data);
         setInputs({...inputs, inputLotNo : ""})
         setIsloading(false);
       })
       .catch ( error => {
-        alert("창고에러 : " + error.message);
-         setIsloading(false);  
+        alert("통신에러 : " + error.message);
+        setIsloading(false);  
       }); 
     }    
   }, [isLoading])
@@ -234,47 +227,49 @@ function MoveScreen ({navigation, route}) {
     if ((name === 'inputLotNo' && event.nativeEvent.key === "Enter") ||
         (name === 'scanner' && lotNo !== null)) {
           setIsloading(true);
-    }
+    } 
   }
 
   const onPress = (async() => {
-    const urlParams = {
-      tableNm : 'LEM100',
-      work_dt : inputDate
-    }
-    let url = ServerInfo.serverURL + '/api/code';   
-    let codeNo = await fetch(url, urlParams).then(data => codeNo = data[0].codeNo);
-    
-    const saveList = [];    
-    lotList.map(value => {
-      saveList.push({
-        out_fac : LoginInfo.fac_cd,
-        in_fac : LoginInfo.fac_cd,
-        mov_no : codeNo,
-        out_dt : inputDate,
-        out_wh : inputOutWarehouse,
-        in_wh : inputInWarehouse,
-        itm_id : value.itm_id,
-        mng_no : value.mng_no,
-        box_sq : value.box_sq,
-        box_no : value.box_no,
-        location : value.location,
-        qty : value.qty,
-        rfid : value.rfid,
-        rmks : "",
-        reg_id : LoginInfo.reg_id
-      });
-    })
-    setSaveApiParams(saveList);
+ 
+      const urlParams = {
+        tableNm : 'LEM100',
+        work_dt : inputDate
+      }
+      let url = ServerInfo.serverURL + '/api/code';   
+      let codeNo = await fetch(url, urlParams).then(data => codeNo = data[0].codeNo);
+      
+      const saveList = [];    
+      lotList.map(value => {
+        saveList.push({
+          out_fac : LoginInfo.fac_cd,
+          in_fac : LoginInfo.fac_cd,
+          mov_no : codeNo,
+          out_dt : inputDate,
+          out_wh : inputOutWarehouse,
+          in_wh : inputInWarehouse,
+          itm_id : value.itm_id,
+          mng_no : value.mng_no,
+          box_sq : value.box_sq,
+          box_no : value.box_no,
+          location : value.location,
+          qty : value.qty,
+          rfid : value.rfid,
+          rmks : "",
+          reg_id : LoginInfo.reg_id
+        });
+      })
+      setSaveApiParams(saveList);    
   })
 
   useEffect(() => {
-    const url = ServerInfo.serverURL + '/api/product/workMoveProduct';
-    console.log('saveApiParams : ', saveApiParams)
-    fetchPost(url, saveApiParams)
-      .then( setLotList([]))
-      .catch ( error => {alert("등록에러 : " + error.message);});
-
+    if (Object.keys(saveApiParams).length > 0) {
+      const url = ServerInfo.serverURL + '/api/product/workMoveProduct';      
+      fetchPost(url, saveApiParams)
+        .then( setLotList([]))
+        .catch ( error => {alert("등록에러 : " + error.message);});  
+    }
+   
   }, [saveApiParams])
 
   return (
@@ -361,6 +356,7 @@ function MoveScreen ({navigation, route}) {
             <Center space={3}><Spinner size="lg" /></Center>
           :
             <FlatList 
+              removeClippedSubviews={false} //맨 마지막 input박스에 커서 가도 키보드 안사라지게 하는 부분
               flex = {1} bg={useColorModeValue("gray.50", "gray.700")} 
               data = {lotList}
               renderItem = {(item, index) => {return <InputSwipeListBox 
@@ -374,7 +370,7 @@ function MoveScreen ({navigation, route}) {
             />
           }
 
-          <Button  m = {1} onPress = {onPress}>등록</Button>    
+          <Button  m = {1} onPress = {() => onPress()}>등록</Button>    
       </>      
   )
 };

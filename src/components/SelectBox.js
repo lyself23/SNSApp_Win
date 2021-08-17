@@ -11,6 +11,7 @@ function SelectBox (props) {
            // accessibilityLabel={"창고 선택"}
             placeholder={props.labelName}
             onValueChange = {props.onValueChange}
+            onPress = {props.onPress}
             _selectedItem={{
                 bg: "cyan.600",
                 endIcon: <CheckIcon size={4} />,

@@ -35,5 +35,4 @@ function InputIcon (props) {
     )
 }
 
-
 export {InputIcon};
